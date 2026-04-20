@@ -33,8 +33,9 @@ export async function syncUser() {
     }).returning();
 
     return newUser;
-  } catch (error: any) {
-    console.error("DEBUG: SyncUser Database Error:", error.message);
-    throw error;
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error("DEBUG: SyncUser Database Error:", err.message);
+    throw err;
   }
 }

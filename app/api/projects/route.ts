@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
-    const { userId: clerkId } = auth();
+    const { userId: clerkId } = await auth();
     if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { title } = await req.json();
@@ -26,14 +26,15 @@ export async function POST(req: Request) {
     }).returning();
 
     return NextResponse.json(newProject);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const { userId: clerkId } = auth();
+    const { userId: clerkId } = await auth();
     if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const user = await db.query.users.findFirst({
@@ -45,7 +46,8 @@ export async function GET() {
     const userProjects = await db.select().from(projects).where(eq(projects.creatorId, user.id));
 
     return NextResponse.json(userProjects);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

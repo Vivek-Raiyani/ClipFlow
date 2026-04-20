@@ -3,13 +3,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, R2_BUCKET_NAME } from "@/lib/r2";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { fileName, fileType, projectId } = await req.json();
@@ -31,8 +28,9 @@ export async function POST(req: Request) {
     const signedUrl = await getSignedUrl(r2, command, { expiresIn: 3600 });
 
     return NextResponse.json({ signedUrl, key });
-  } catch (error: any) {
-    console.error("Error generating presigned URL:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error("Error generating presigned URL:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

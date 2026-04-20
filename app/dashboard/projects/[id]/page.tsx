@@ -5,13 +5,19 @@ import { notFound } from "next/navigation";
 import { syncUser } from "@/lib/user-sync";
 import UploadZone from "@/app/components/UploadZone";
 import FileActions from "@/app/components/FileActions";
+import YouTubePublishButton from "@/app/components/YouTubePublishButton";
+import ThumbnailManager from "@/app/components/ThumbnailManager";
+import { auth } from "@clerk/nextjs/server";
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ yt_connected?: string, yt_error?: string }> }) {
+  const { id } = await params;
+  const { yt_connected, yt_error } = await searchParams;
+  const { userId } = await auth();
   const user = await syncUser();
   if (!user) return null;
 
   const project = await db.query.projects.findFirst({
-    where: eq(projects.id, params.id),
+    where: eq(projects.id, id),
   });
 
   if (!project) notFound();
@@ -21,8 +27,21 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
     .where(eq(projectFiles.projectId, project.id))
     .orderBy(desc(projectFiles.createdAt));
 
+  const approvedFiles = files.filter(f => f.status === "approved");
+
   return (
     <div className="space-y-12">
+      {searchParams.yt_connected && (
+        <div className="glass p-4 bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-mono flex items-center justify-between mb-8 animate-fade-in">
+          <span>✓ YouTube channel connected successfully. Protocol bridge complete.</span>
+        </div>
+      )}
+      {searchParams.yt_error && (
+        <div className="glass p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-mono flex items-center justify-between mb-8 animate-fade-in">
+          <span>✗ Protocol Error: {searchParams.yt_error}</span>
+        </div>
+      )}
+
       {/* Page Header */}
       <header className="flex justify-between items-end animate-fade-in">
         <div>
@@ -96,12 +115,38 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
               </div>
             </div>
           </section>
+
+          {/* YouTube Publisher Component */}
+          {user.role === "creator" && (
+            <section className="glass p-8 border-l-2 border-red-500/20">
+              <h3 className="font-serif text-xl mb-6 text-white tracking-tight flex items-center gap-2">
+                Deployment Interface
+              </h3>
+              <YouTubePublishButton 
+                projectId={project.id}
+                youtubeVideoId={project.youtubeVideoId}
+                isYouTubeConnected={!!user.youtubeRefreshToken}
+                approvedFiles={approvedFiles}
+              />
+            </section>
+          )}
+
+          {/* Thumbnail Management */}
+          {user.role === "creator" && (
+            <section className="glass p-8 border-l-2 border-accent/20">
+              <ThumbnailManager 
+                projectId={project.id} 
+                youtubeVideoId={project.youtubeVideoId} 
+              />
+            </section>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function FileRow({ file }: { file: any }) {
   return (
     <div className="glass p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white/[0.01] hover:bg-white/[0.04] transition-all group border-b-2 border-transparent hover:border-primary/20">

@@ -9,7 +9,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId: clerkId } = auth();
+    const { userId: clerkId } = await auth();
     if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { status } = await req.json();
@@ -41,7 +41,8 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedFile);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

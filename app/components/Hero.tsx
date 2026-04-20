@@ -15,7 +15,7 @@ const Hero = () => {
       <div className={`${styles.heroContent} animate-fade-in`}>
         <span className={styles.badge}>Status: In Beta</span>
         <h1 className={styles.title}>
-          Your Channel's <br />
+          Your Channel&apos;s <br />
           Security Layer.
         </h1>
         <p className={styles.subtitle}>

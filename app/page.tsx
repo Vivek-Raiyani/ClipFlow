@@ -10,7 +10,7 @@ export default function Page() {
       {/* Feature Sections can be added here */}
       <section className="container" style={{ padding: '8rem 2rem' }}>
         <div style={{ textAlign: 'center', opacity: 0.5 }}>
-          <p>Trusted by the world's most secure content teams</p>
+          <p>Trusted by the world&apos;s most secure content teams</p>
         </div>
       </section>
     </main>

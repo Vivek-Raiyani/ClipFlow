@@ -6,7 +6,7 @@ import { eq, desc } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
-    const { userId: clerkId } = auth();
+    const { userId: clerkId } = await auth();
     if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { projectId, uploaderId, r2Key, fileName, fileSize, type } = await req.json();
@@ -40,7 +40,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(newFile);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
