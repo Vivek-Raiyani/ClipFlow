@@ -1,0 +1,152 @@
+.heroContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar {
+  position: fixed;
+  top: 1.5rem;
+  width: calc(100% - 3rem);
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  z-index: 200;
+  border-radius: 99rem;
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg-color);
+}
+
+.heroContent {
+  text-align: center;
+  max-width: 900px;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 99rem;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: 1px solid var(--glass-border);
+  color: var(--primary);
+  margin-bottom: 2.5rem;
+  background: hsla(322, 81%, 59%, 0.05);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(3.5rem, 10vw, 6rem);
+  font-weight: 600;
+  line-height: 1.05;
+  margin-bottom: 2rem;
+  letter-spacing: -0.03em;
+  background: linear-gradient(to bottom, #fff 50%, rgba(255,255,255,0.4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.4);
+  max-width: 600px;
+  margin: 0 auto 3.5rem;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.ctaGroup {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.buttonPrimary {
+  padding: 1rem 2.5rem;
+  border-radius: 99rem;
+  font-weight: 600;
+  background: #fff;
+  color: #000;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.buttonPrimary:hover {
+  transform: scale(1.05);
+  background: #f0f0f0;
+}
+
+.buttonSecondary {
+  padding: 1rem 2.5rem;
+  border-radius: 99rem;
+  font-weight: 500;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-size: 0.9rem;
+}
+
+.buttonSecondary:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+.workflow {
+  margin-top: 7rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  opacity: 0.6;
+}
+
+/* Rest of workflow styles... */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.25rem;
+  font-size: 1.5rem;
+}
+
+.arrow {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--glass-border), transparent);
+  position: relative;
+}

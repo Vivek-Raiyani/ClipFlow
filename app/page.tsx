@@ -1,19 +1,18 @@
-import Hello from "./components/hello"
+import Hero from "./components/Hero";
+import Features from "./components/Features";
 
-const Page = async () => {
-  const response = await fetch("http:localhost:3000/api/books");
-  const books = await response.json();
-  console.log("I am a server component!")
-
+export default function Page() {
   return (
     <main>
-      <div className="text-5xl underline">This is a sample server component</div>
-      <hr />
-        <code>{JSON.stringify(books, null, 2)}</code>
-      <hr />
-      <Hello/>
+      <Hero />
+      <Features />
+      
+      {/* Feature Sections can be added here */}
+      <section className="container" style={{ padding: '8rem 2rem' }}>
+        <div style={{ textAlign: 'center', opacity: 0.5 }}>
+          <p>Trusted by the world's most secure content teams</p>
+        </div>
+      </section>
     </main>
-  )
+  );
 }
-
-export default Page
