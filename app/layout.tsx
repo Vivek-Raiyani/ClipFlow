@@ -27,7 +27,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <p>comming from main layout</p>
+        {children}
+      </body>
     </html>
   );
 }
+
+// allows share uielemts acts as parent for all pages
