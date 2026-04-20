@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARODA SPORTS ARENA | Play Hard, Play Smart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .volt-bg { background-color: #CCFF00; }
+        .volt-text { color: #CCFF00; }
+        .volt-border { border-color: #CCFF00; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .page-overlay {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slot-btn.selected {
+            background-color: #CCFF00;
+            border-color: #CCFF00;
+            color: black;
+            transform: scale(0.96);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0% { box-shadow: 0 0 0 0px rgba(204,255,0,0.7); }
+            100% { box-shadow: 0 0 0 10px rgba(204,255,0,0); }
+        }
+
+        /* Booking modal — mobile: slide up from bottom */
+        @media (max-width: 767px) {
+            #bookingModal .modal-panel {
+                transform: translateY(100%);
+                transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            #bookingModal.open .modal-panel {
+                transform: translateY(0);
+            }
+        }
+        /* Desktop: fade + scale in, always centered */
+        @media (min-width: 768px) {
+            #bookingModal .modal-panel {
+                opacity: 0;
+                transform: scale(0.96) translateY(-50%) translateX(-50%);
+                transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                bottom: auto;
+                width: 90%;
+                max-width: 960px;
+                max-height: 88vh;
+                overflow-y: auto;
+                border-radius: 24px;
+            }
+            #bookingModal.open .modal-panel {
+                opacity: 1;
+                transform: scale(1) translateY(-50%) translateX(-50%);
+            }
+        }
+
+        /* Step transitions */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* Payment UI */
+        .pay-method { cursor: pointer; border: 2px solid #e5e7eb; border-radius: 14px; padding: 14px 18px; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+        .pay-method:hover { border-color: #000; }
+        .pay-method.selected { border-color: #CCFF00; background: #f9ffe0; }
+
+        /* Map embed */
+        .map-frame { border: none; width: 100%; height: 420px; border-radius: 24px; }
+        @media(max-width: 768px) { .map-frame { height: 280px; } }
+    </style>
+</head>
+<body class="bg-white text-black">
+
+<!-- ══════════════════════════════════════════
+     NAV
+══════════════════════════════════════════ -->
+<nav class="fixed top-0 w-full z-[60] glass border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
+        <div class="text-xl md:text-2xl font-black tracking-tighter uppercase italic cursor-pointer" onclick="window.scrollTo(0,0)">
+            Baroda<span class="volt-text">Arena</span>
+        </div>
+        <div class="hidden md:flex space-x-8 font-bold text-xs uppercase tracking-widest items-center">
+            <a href="#facilities" class="hover:opacity-50 transition">Facilities</a>
+            <a href="#amenities" class="hover:opacity-50 transition">Amenities</a>
+            <a href="#location" class="hover:opacity-50 transition">Location</a>
+            <a href="/login" class="flex items-center gap-1.5 text-gray-400 hover:text-black transition border border-gray-200 px-3 py-1.5 rounded-full hover:border-black">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Admin
+            </a>
+        </div>
+        <button onclick="openBooking()" class="bg-black text-white px-5 py-2 md:px-6 md:py-2.5 rounded-full text-xs font-black uppercase tracking-widest hover:scale-105 transition active:scale-95">
+            Book Now
+        </button>
+    </div>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+    <div class="absolute inset-0 z-0 opacity-55 scale-105">
+        <img src="https://images.unsplash.com/photo-1541252260730-0412e3e2108e?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover" alt="Arena">
+    </div>
+    <div class="absolute inset-0 z-[1] bg-gradient-to-b from-black/30 via-transparent to-black/70"></div>
+
+    <div class="relative z-10 text-center px-6">
+        <p class="text-[#CCFF00] text-xs font-black uppercase tracking-[0.4em] mb-4 reveal">Vadodara's Premier Sports Destination</p>
+        <h1 class="text-white text-[clamp(3.5rem,12vw,9rem)] font-black italic uppercase tracking-tighter leading-[0.85] reveal">
+            PLAY<br><span class="volt-text">BIGGER.</span>
+        </h1>
+        <p class="text-gray-300 mt-6 text-base md:text-xl max-w-xl mx-auto font-light reveal">
+            World-class multi-sport facility in the heart of Baroda. Elite courts, pro coaching, instant booking.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center reveal">
+            <button onclick="openBooking()" class="volt-bg text-black px-10 py-4 rounded-full font-black uppercase tracking-widest hover:brightness-110 transition shadow-2xl text-sm">
+                Book a Slot
+            </button>
+            <a href="#facilities" class="border border-white/60 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest hover:bg-white hover:text-black transition text-sm text-center">
+                Explore Arena
+            </a>
+        </div>
+    </div>
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-white animate-bounce opacity-50">
+        <i data-lucide="chevron-down"></i>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     QUICK STATS BAR
+══════════════════════════════════════════ -->
+<div class="bg-black text-white py-5 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div><div class="text-3xl md:text-4xl font-black italic volt-text">8+</div><div class="text-xs text-gray-400 uppercase tracking-widest mt-1">Pickleball Courts</div></div>
+        <div><div class="text-3xl md:text-4xl font-black italic volt-text">4</div><div class="text-xs text-gray-400 uppercase tracking-widest mt-1">Cricket Nets</div></div>
+        <div><div class="text-3xl md:text-4xl font-black italic volt-text">5K+</div><div class="text-xs text-gray-400 uppercase tracking-widest mt-1">Happy Players</div></div>
+        <div><div class="text-3xl md:text-4xl font-black italic volt-text">6AM</div><div class="text-xs text-gray-400 uppercase tracking-widest mt-1">Opens Daily</div></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FACILITIES
+══════════════════════════════════════════ -->
+<section id="facilities" class="bg-white py-24 md:py-32 space-y-24 md:space-y-40">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <p class="text-xs font-black uppercase tracking-[0.4em] text-gray-400 mb-3">What We Offer</p>
+        <h2 class="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none reveal">World‑Class<br>Facilities</h2>
+    </div>
+
+    <!-- Pickleball -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+        <div class="reveal overflow-hidden rounded-3xl aspect-[4/3] md:aspect-square shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover hover:scale-105 transition duration-700" alt="Pickleball">
+        </div>
+        <div class="reveal">
+            <span class="text-xs font-black uppercase tracking-[0.3em] text-gray-400">01 / Trending</span>
+            <h3 class="text-4xl md:text-6xl font-black italic uppercase mt-3 mb-5 leading-none">Pickleball<br>Elite</h3>
+            <p class="text-lg text-gray-500 leading-relaxed mb-6">World-class panoramic courts with Pro-Cushion surfaces used in international tournaments. The fastest-growing sport, now in Vadodara.</p>
+            <ul class="space-y-2 mb-8 text-sm font-bold">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> 8 Professional Courts</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Night-time Floodlights</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Equipment on Rent</li>
+            </ul>
+            <button onclick="openDetail('pickleball')" class="group flex items-center gap-3 text-base font-black uppercase italic border-b-2 border-black pb-1 hover:volt-border transition">
+                Explore Details <span class="group-hover:translate-x-2 transition-transform">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cricket -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+        <div class="reveal md:order-2 overflow-hidden rounded-3xl aspect-[4/3] md:aspect-square shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover hover:scale-105 transition duration-700" alt="Cricket">
+        </div>
+        <div class="reveal md:order-1">
+            <span class="text-xs font-black uppercase tracking-[0.3em] text-gray-400">02 / High Intensity</span>
+            <h3 class="text-4xl md:text-6xl font-black italic uppercase mt-3 mb-5 leading-none">Cricket<br>Cage</h3>
+            <p class="text-lg text-gray-500 leading-relaxed mb-6">Professional turf nets and advanced bowling machines to sharpen every stroke. Perfect for solo drills or team practice sessions.</p>
+            <ul class="space-y-2 mb-8 text-sm font-bold">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> 4 Bowling Machine Nets</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Artificial Turf Pitch</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Speed Control Machines</li>
+            </ul>
+            <button onclick="openDetail('cricket')" class="group flex items-center gap-3 text-base font-black uppercase italic border-b-2 border-black pb-1 hover:volt-border transition">
+                Explore Details <span class="group-hover:translate-x-2 transition-transform">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Gym -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+        <div class="reveal overflow-hidden rounded-3xl aspect-[4/3] md:aspect-square shadow-2xl">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover hover:scale-105 transition duration-700" alt="Gym">
+        </div>
+        <div class="reveal">
+            <span class="text-xs font-black uppercase tracking-[0.3em] text-gray-400">03 / Performance</span>
+            <h3 class="text-4xl md:text-6xl font-black italic uppercase mt-3 mb-5 leading-none">Impact<br>Gym</h3>
+            <p class="text-lg text-gray-500 leading-relaxed mb-6">A sanctuary for serious athletes. Hammer Strength plate-loaded equipment, full cardio suite and functional training zones.</p>
+            <ul class="space-y-2 mb-8 text-sm font-bold">
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Hammer Strength Equipment</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Full Cardio Suite</li>
+                <li class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 volt-text"></i> Expert Trainers On-site</li>
+            </ul>
+            <button onclick="openDetail('gym')" class="group flex items-center gap-3 text-base font-black uppercase italic border-b-2 border-black pb-1 hover:volt-border transition">
+                Explore Details <span class="group-hover:translate-x-2 transition-transform">→</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHY US / AMENITIES
+══════════════════════════════════════════ -->
+<section id="amenities" class="bg-gray-50 py-20 md:py-28 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-16">
+            <p class="text-xs font-black uppercase tracking-[0.4em] text-gray-400 mb-3">Why Choose Us</p>
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter italic reveal">Everything You<br>Need to Perform</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="zap" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Instant Booking</h4>
+                <p class="text-gray-600 leading-relaxed">No calls, no delays. Real-time slot availability for all facilities at your fingertips, 24/7.</p>
+            </div>
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="users" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Expert Coaching</h4>
+                <p class="text-gray-600 leading-relaxed">Certified trainers and professional coaches available for all skill levels across all sports.</p>
+            </div>
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="trophy" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Pro Gear</h4>
+                <p class="text-gray-600 leading-relaxed">Top-of-the-line equipment and apparel available for rent on-site. Come as you are.</p>
+            </div>
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="sun" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Floodlit Courts</h4>
+                <p class="text-gray-600 leading-relaxed">State-of-the-art LED floodlights for evening sessions. Play long after sunset.</p>
+            </div>
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="droplets" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Changing Rooms</h4>
+                <p class="text-gray-600 leading-relaxed">Clean, spacious locker rooms with hot showers and secure storage facilities.</p>
+            </div>
+            <div class="reveal">
+                <div class="w-14 h-14 volt-bg rounded-2xl flex items-center justify-center mb-5"><i data-lucide="coffee" class="w-7 h-7 text-black"></i></div>
+                <h4 class="text-xl font-black uppercase italic mb-3">Sports Café</h4>
+                <p class="text-gray-600 leading-relaxed">Protein shakes, energy drinks, and healthy bites to fuel your performance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     LOCATION MAP SECTION
+══════════════════════════════════════════ -->
+<section id="location" class="bg-white py-20 md:py-28 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-10 md:flex md:items-end md:justify-between gap-6">
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.4em] text-gray-400 mb-3">Find Us</p>
+                <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter italic reveal">We're Right<br>Here.</h2>
+            </div>
+            <div class="mt-6 md:mt-0 reveal">
+                <div class="flex items-start gap-3 mb-4">
+                    <i data-lucide="map-pin" class="w-5 h-5 volt-text mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <p class="font-black text-sm uppercase tracking-wide">Baroda Sports Arena</p>
+                        <p class="text-gray-500 text-sm">Near Sama, Vadodara, Gujarat</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mb-4">
+                    <i data-lucide="clock" class="w-5 h-5 volt-text flex-shrink-0"></i>
+                    <p class="text-gray-600 text-sm font-medium">Mon–Sun: 6:00 AM – 11:00 PM</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i data-lucide="phone" class="w-5 h-5 volt-text flex-shrink-0"></i>
+                    <p class="text-gray-600 text-sm font-medium">+91 98765 43210</p>
+                </div>
+                <a href="https://www.google.com/maps/place/BARODA+SPORTS+ARENA/@22.3125195,73.1263611,17z" target="_blank"
+                   class="mt-5 inline-flex items-center gap-2 volt-bg text-black px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:brightness-105 transition">
+                    <i data-lucide="navigation" class="w-4 h-4"></i> Get Directions
+                </a>
+            </div>
+        </div>
+        <div class="reveal rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+            <iframe class="map-frame" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3691.1236!2d73.1261155!3d22.3124706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395fc96b0d7a0c7b%3A0xc5f16d48e6bdc539!2sBARODA%20SPORTS%20ARENA!5e0!3m2!1sen!2sin!4v1711000000000">
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FACILITY DETAIL OVERLAY
+══════════════════════════════════════════ -->
+<div id="detail-overlay" class="fixed inset-0 z-[100] bg-white translate-x-full page-overlay overflow-y-auto hidden">
+    <button onclick="closeDetail()" class="fixed top-5 right-5 md:top-8 md:right-8 z-[110] bg-black text-white p-3 md:p-4 rounded-full shadow-2xl hover:scale-105 transition">
+        <i data-lucide="x"></i>
+    </button>
+    <div class="relative">
+        <div class="h-[50vh] md:h-[60vh] bg-black relative">
+            <img id="det-img" src="" class="w-full h-full object-cover opacity-65">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6 md:p-12">
+                <h2 id="det-title" class="text-white text-5xl md:text-9xl font-black italic uppercase tracking-tighter"></h2>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20 grid md:grid-cols-3 gap-10 md:gap-16">
+            <div class="md:col-span-2">
+                <h3 class="text-2xl md:text-3xl font-black uppercase italic mb-5">Overview</h3>
+                <p id="det-desc" class="text-lg md:text-xl text-gray-600 leading-relaxed mb-10"></p>
+                <h3 class="text-2xl font-black uppercase italic mb-6">Gallery</h3>
+                <div id="det-gallery" class="flex gap-4 overflow-x-auto no-scrollbar pb-6"></div>
+                <h3 class="text-2xl font-black uppercase italic mt-10 mb-6">Player Feedback</h3>
+                <div id="det-reviews" class="space-y-5"></div>
+            </div>
+            <div>
+                <div class="sticky top-24 bg-gray-50 p-6 md:p-8 rounded-3xl border border-gray-100">
+                    <h4 class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">Pricing</h4>
+                    <div class="text-4xl md:text-5xl font-black mb-6 italic">₹400<span class="text-base font-normal opacity-40">/hr</span></div>
+                    <ul class="space-y-3 mb-8 text-sm font-bold uppercase tracking-wide">
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="volt-text w-4 h-4"></i> Pro-grade Surface</li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="volt-text w-4 h-4"></i> Smart LED Lighting</li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="volt-text w-4 h-4"></i> Water Station</li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="volt-text w-4 h-4"></i> Gear Available</li>
+                    </ul>
+                    <button onclick="openBooking()" class="w-full volt-bg text-black py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:scale-105 transition text-sm">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     BOOKING MODAL
+══════════════════════════════════════════ -->
+<div id="bookingModal" class="fixed inset-0 z-[120] hidden">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closeBooking()"></div>
+    <div class="modal-panel absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden" style="max-height:92vh; overflow-y:auto;">
+        <button onclick="closeBooking()" class="absolute top-4 right-4 z-20 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- STEP 1 -->
+        <div id="step1" class="step active">
+            <div class="flex flex-col md:flex-row" style="min-height:520px;">
+                <div class="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto border-b md:border-b-0 md:border-r border-gray-100">
+                    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-6">Reserve Your Spot</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Select Facility</label>
+                            <div class="flex flex-wrap gap-2" id="facility-tabs">
+                                <button onclick="selectFacility(this,'Pickleball','₹400')" data-fac="Pickleball" data-rate="400" class="fac-tab px-5 py-2.5 rounded-full bg-black text-white font-bold text-xs uppercase tracking-widest transition">Pickleball</button>
+                                <button onclick="selectFacility(this,'Cricket','₹350')" data-fac="Cricket" data-rate="350" class="fac-tab px-5 py-2.5 rounded-full bg-gray-100 text-gray-500 font-bold text-xs uppercase tracking-widest transition">Cricket</button>
+                                <button onclick="selectFacility(this,'Gym','₹200')" data-fac="Gym" data-rate="200" class="fac-tab px-5 py-2.5 rounded-full bg-gray-100 text-gray-500 font-bold text-xs uppercase tracking-widest transition">Gym</button>
+                                <button onclick="selectFacility(this,'Badminton','₹300')" data-fac="Badminton" data-rate="300" class="fac-tab px-5 py-2.5 rounded-full bg-gray-100 text-gray-500 font-bold text-xs uppercase tracking-widest transition">Badminton</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Select Date</label>
+                            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1" id="date-tabs"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black uppercase text-gray-400 mb-3 tracking-widest">Pick Time Slots</label>
+                            <div class="grid grid-cols-3 gap-2" id="slot-grid"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/5 p-6 md:p-8 bg-gray-50 flex flex-col">
+                    <h3 class="text-lg font-black uppercase tracking-wide mb-5">Contact Details</h3>
+                    <div class="space-y-3">
+                        <input id="b-name" type="text" placeholder="Full Name" class="w-full p-3.5 bg-white rounded-xl border border-gray-200 outline-none focus:border-black transition text-sm font-medium">
+                        <input id="b-phone" type="tel" placeholder="Phone Number" class="w-full p-3.5 bg-white rounded-xl border border-gray-200 outline-none focus:border-black transition text-sm font-medium">
+                        <input id="b-email" type="email" placeholder="Email Address" class="w-full p-3.5 bg-white rounded-xl border border-gray-200 outline-none focus:border-black transition text-sm font-medium">
+                    </div>
+                    <div class="mt-auto pt-6">
+                        <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4" id="summary-box">
+                            <div class="flex justify-between text-xs text-gray-400 uppercase tracking-widest font-bold mb-3">
+                                <span id="sum-facility">Pickleball</span>
+                                <span id="sum-date">—</span>
+                            </div>
+                            <div id="sum-slots" class="text-sm text-gray-400 italic">No slots selected yet</div>
+                            <div class="flex justify-between items-end border-t border-gray-100 pt-3 mt-3">
+                                <span class="text-xs font-bold text-gray-400 uppercase">Total</span>
+                                <span id="total-price" class="text-3xl font-black italic">₹0</span>
+                            </div>
+                        </div>
+                        <button onclick="goToPayment()" class="w-full volt-bg text-black py-4 rounded-xl font-black uppercase tracking-widest hover:brightness-110 transition text-sm hover:scale-[1.02] active:scale-95">
+                            Proceed to Pay →
+                        </button>
+                        <p class="text-[10px] text-center mt-3 text-gray-400 uppercase tracking-widest">Secure payment via Razorpay / PayTM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="step">
+            <div class="p-6 md:p-10 max-w-lg mx-auto">
+                <button onclick="backToBooking()" class="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-black transition mb-6">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+                </button>
+                <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter mb-2">Complete Payment</h2>
+                <p class="text-gray-400 text-sm mb-8">Booking is confirmed once payment is received.</p>
+                <div class="bg-black text-white rounded-2xl p-5 mb-7">
+                    <div class="text-xs font-black uppercase tracking-widest text-gray-400 mb-1" id="pay-facility-label">—</div>
+                    <div class="text-sm font-bold text-gray-300 mb-3" id="pay-slots-label">—</div>
+                    <div class="flex justify-between items-center border-t border-white/10 pt-3">
+                        <span class="text-sm text-gray-400">Amount Due</span>
+                        <span id="pay-total" class="text-3xl font-black italic volt-text">₹0</span>
+                    </div>
+                </div>
+                <p class="text-xs font-black uppercase tracking-widest text-gray-400 mb-3">Choose Payment Method</p>
+                <div class="space-y-3 mb-7">
+                    <div class="pay-method selected" onclick="selectPayMethod(this)">
+                        <div class="w-10 h-10 bg-[#072654] rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-black">RP</span></div>
+                        <div><p class="font-black text-sm">Razorpay</p><p class="text-xs text-gray-400">UPI · Cards · Net Banking · Wallets</p></div>
+                        <i data-lucide="check-circle" class="ml-auto w-5 h-5 volt-text check-icon"></i>
+                    </div>
+                    <div class="pay-method" onclick="selectPayMethod(this)">
+                        <div class="w-10 h-10 bg-[#00BAF2] rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-black">PT</span></div>
+                        <div><p class="font-black text-sm">Paytm</p><p class="text-xs text-gray-400">Paytm Wallet · UPI · Cards</p></div>
+                        <i data-lucide="check-circle" class="ml-auto w-5 h-5 text-transparent check-icon"></i>
+                    </div>
+                    <div class="pay-method" onclick="selectPayMethod(this)">
+                        <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-[10px] font-black">UPI</span></div>
+                        <div><p class="font-black text-sm">UPI / BHIM</p><p class="text-xs text-gray-400">GPay · PhonePe · Any UPI App</p></div>
+                        <i data-lucide="check-circle" class="ml-auto w-5 h-5 text-transparent check-icon"></i>
+                    </div>
+                </div>
+                <div id="upi-input-area" class="mb-6">
+                    <label class="text-xs font-black uppercase tracking-widest text-gray-400 block mb-2">Enter UPI ID or Mobile Number</label>
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="yourname@upi" class="flex-1 p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-black transition text-sm font-medium">
+                        <button class="bg-black text-white px-4 rounded-xl text-xs font-black uppercase">Verify</button>
+                    </div>
+                </div>
+                <button onclick="confirmPayment()" class="w-full volt-bg text-black py-4 rounded-xl font-black uppercase tracking-widest hover:brightness-110 transition text-sm">Pay Now 🔒</button>
+                <p class="text-[10px] text-center mt-3 text-gray-400 uppercase tracking-widest">256-bit SSL Encrypted · PCI DSS Compliant</p>
+            </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" class="step">
+            <div class="p-8 md:p-14 text-center max-w-md mx-auto">
+                <div class="w-20 h-20 volt-bg rounded-full flex items-center justify-center mx-auto mb-6 pulse">
+                    <i data-lucide="check" class="w-10 h-10 text-black"></i>
+                </div>
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter mb-3">Booking Confirmed!</h2>
+                <p class="text-gray-500 mb-6" id="confirm-msg">Your slot has been reserved.</p>
+                <div class="bg-gray-50 rounded-2xl p-5 text-left mb-7 border border-gray-100">
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-gray-400">Facility</span><span id="conf-facility">—</span></div>
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-gray-400">Date</span><span id="conf-date">—</span></div>
+                    <div class="flex justify-between text-sm font-bold mb-2"><span class="text-gray-400">Slots</span><span id="conf-slots">—</span></div>
+                    <div class="flex justify-between text-sm font-bold border-t border-gray-200 pt-2 mt-2"><span class="text-gray-400">Amount Paid</span><span id="conf-amount" class="volt-text text-lg">—</span></div>
+                </div>
+                <button onclick="closeBooking()" class="w-full bg-black text-white py-4 rounded-xl font-black uppercase tracking-widest hover:scale-[1.02] transition text-sm">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="bg-black text-white pt-16 md:pt-20 pb-32 md:pb-10 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
+        <div class="max-w-xs">
+            <div class="text-3xl font-black italic tracking-tighter uppercase mb-4">Baroda<span class="volt-text">Arena</span></div>
+            <p class="text-gray-500 leading-relaxed text-sm">Premium sports infrastructure in Vadodara, designed to push every athlete further.</p>
+            <div class="flex gap-4 mt-6">
+                <a href="#" class="w-9 h-9 border border-gray-700 rounded-full flex items-center justify-center hover:border-[#CCFF00] hover:text-[#CCFF00] transition"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                <a href="#" class="w-9 h-9 border border-gray-700 rounded-full flex items-center justify-center hover:border-[#CCFF00] hover:text-[#CCFF00] transition"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+                <a href="#" class="w-9 h-9 border border-gray-700 rounded-full flex items-center justify-center hover:border-[#CCFF00] hover:text-[#CCFF00] transition"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-10">
+            <div>
+                <h5 class="font-bold uppercase mb-4 text-xs tracking-widest volt-text">Arena</h5>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white transition">Pickleball</a></li>
+                    <li><a href="#" class="hover:text-white transition">Cricket Nets</a></li>
+                    <li><a href="#" class="hover:text-white transition">Impact Gym</a></li>
+                    <li><a href="#" class="hover:text-white transition">Badminton</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold uppercase mb-4 text-xs tracking-widest volt-text">Company</h5>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition">Membership</a></li>
+                    <li><a href="/login" class="hover:text-white transition">Admin Login</a></li>
+                    <li><a href="#location" class="hover:text-white transition">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold uppercase mb-4 text-xs tracking-widest volt-text">Hours</h5>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li>Mon – Fri: 6AM – 11PM</li>
+                    <li>Sat – Sun: 6AM – 10PM</li>
+                    <li class="pt-2 font-bold text-gray-300">+91 98765 43210</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
+        <span>© 2025 Baroda Sports Arena. All rights reserved.</span>
+        <div class="flex gap-4">
+            <a href="#" class="hover:text-gray-400 transition">Privacy Policy</a>
+            <a href="#" class="hover:text-gray-400 transition">Terms of Use</a>
+            <a href="/login" class="hover:text-gray-400 transition">Admin Login</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Mobile Sticky CTA -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 p-3 glass z-[50] flex items-center justify-between border-t border-gray-100">
+    <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Starting at</p>
+        <p class="text-lg font-black">₹200/hr</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="/login" class="border border-gray-300 text-gray-600 px-4 py-3 rounded-full font-bold text-xs">Admin</a>
+        <button onclick="openBooking()" class="volt-bg text-black px-7 py-3 rounded-full font-black uppercase text-xs tracking-widest active:scale-95 transition">Book Slot</button>
+    </div>
+</div>
+
+<script>
+lucide.createIcons();
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const sportData = {
+    pickleball: {
+        title: "Pickleball Elite",
+        desc: "Experience our state-of-the-art panoramic pickleball courts. We feature Pro-Cushion surfaces used in international tournaments, designed to provide consistent bounce and reduced joint impact. All 8 courts feature smart LED lighting for perfect visibility day and night.",
+        img: "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=1000",
+        gallery: ["https://images.unsplash.com/photo-1599586120429-48281b6f0ece?q=80&w=400","https://images.unsplash.com/photo-1554068865-24bccd4e34b8?q=80&w=400","https://images.unsplash.com/photo-1595435064222-4510cdabc4c4?q=80&w=400"],
+        reviews: [{u:"Rahul M.",r:5,t:"Best pickleball facility in all of Gujarat. The courts are immaculate."},{u:"Priya S.",r:5,t:"Great atmosphere and super friendly staff. Will be back every week."}]
+    },
+    cricket: {
+        title: "The Cricket Cage",
+        desc: "Hone your skills in our professional cricket nets. Equipped with advanced bowling machines with variable speed and swing settings, and high-grade artificial turf that mimics natural pitch behavior.",
+        img: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=1000",
+        gallery: ["https://images.unsplash.com/photo-1589801258279-173774c144bc?q=80&w=400","https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=400"],
+        reviews: [{u:"Rohit S.",r:5,t:"Machine speed control is excellent. I've improved my batting in 3 sessions."}]
+    },
+    gym: {
+        title: "Impact Gym",
+        desc: "Designed for those who want results. Our facility includes Hammer Strength plate-loaded equipment, a full cardio suite with treadmills and bikes, and a dedicated functional training zone.",
+        img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1000",
+        gallery: ["https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=400"],
+        reviews: [{u:"Jake W.",r:5,t:"Very clean and never too crowded. Perfect for serious training."}]
+    }
+};
+
+function openDetail(key) {
+    const d = sportData[key];
+    document.getElementById('det-title').innerText = d.title;
+    document.getElementById('det-desc').innerText = d.desc;
+    document.getElementById('det-img').src = d.img;
+    document.getElementById('det-gallery').innerHTML = d.gallery.map(i => `<img src="${i}" class="h-52 md:h-64 rounded-2xl flex-shrink-0 object-cover">`).join('');
+    document.getElementById('det-reviews').innerHTML = d.reviews.map(r => `
+        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+            <p class="text-base italic text-gray-700">"${r.t}"</p>
+            <p class="mt-3 font-black uppercase text-xs tracking-widest">— ${r.u}</p>
+        </div>`).join('');
+    const overlay = document.getElementById('detail-overlay');
+    overlay.classList.remove('hidden');
+    setTimeout(() => overlay.classList.remove('translate-x-full'), 10);
+    document.body.style.overflow = 'hidden';
+    lucide.createIcons();
+}
+function closeDetail() {
+    const overlay = document.getElementById('detail-overlay');
+    overlay.classList.add('translate-x-full');
+    setTimeout(() => { overlay.classList.add('hidden'); document.body.style.overflow = ''; }, 600);
+}
+
+let selectedFacility = 'Pickleball';
+let currentRate = 400;
+let selectedDate = null;
+let selectedSlots = [];
+
+function openBooking() {
+    const modal = document.getElementById('bookingModal');
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.add('open'), 10);
+    document.body.style.overflow = 'hidden';
+    showStep('step1');
+    renderDates();
+    renderSlots();
+    lucide.createIcons();
+}
+function closeBooking() {
+    const modal = document.getElementById('bookingModal');
+    modal.classList.remove('open');
+    setTimeout(() => { modal.classList.add('hidden'); document.body.style.overflow = ''; }, 450);
+    selectedSlots = [];
+}
+function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    lucide.createIcons();
+}
+function selectFacility(btn, name, price) {
+    selectedFacility = name;
+    currentRate = parseInt(btn.dataset.rate);
+    selectedSlots = [];
+    document.querySelectorAll('.fac-tab').forEach(b => {
+        b.className = 'fac-tab px-5 py-2.5 rounded-full bg-gray-100 text-gray-500 font-bold text-xs uppercase tracking-widest transition';
+    });
+    btn.className = 'fac-tab px-5 py-2.5 rounded-full bg-black text-white font-bold text-xs uppercase tracking-widest transition';
+    document.getElementById('sum-facility').innerText = name;
+    renderSlots();
+    updateSummary();
+}
+function renderDates() {
+    const container = document.getElementById('date-tabs');
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let html = '';
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const val = d.toDateString();
+        if (i === 0) selectedDate = val;
+        const isSelected = i === 0;
+        html += `<button onclick="selectDate(this,'${val}')" class="date-tab flex-shrink-0 px-4 py-3 rounded-xl border-2 text-xs font-black text-center transition ${isSelected ? 'border-black bg-black text-white' : 'border-gray-100 hover:border-black'}">
+                    <span class="block text-[10px] uppercase tracking-widest opacity-70">${days[d.getDay()]}</span>
+                    <span>${d.getDate()} ${months[d.getMonth()]}</span>
+                 </button>`;
+    }
+    container.innerHTML = html;
+    const t = new Date();
+    const months2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('sum-date').innerText = `${t.getDate()} ${months2[t.getMonth()]}`;
+}
+function selectDate(btn, val) {
+    selectedDate = val;
+    selectedSlots = [];
+    document.querySelectorAll('.date-tab').forEach(b => {
+        b.className = 'date-tab flex-shrink-0 px-4 py-3 rounded-xl border-2 text-xs font-black text-center transition border-gray-100 hover:border-black';
+    });
+    btn.className = 'date-tab flex-shrink-0 px-4 py-3 rounded-xl border-2 text-xs font-black text-center transition border-black bg-black text-white';
+    const d = new Date(val);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('sum-date').innerText = `${d.getDate()} ${months[d.getMonth()]}`;
+    renderSlots();
+    updateSummary();
+}
+function renderSlots() {
+    const times = ["06:00 AM","07:00 AM","08:00 AM","09:00 AM","10:00 AM","11:00 AM","12:00 PM","01:00 PM","02:00 PM","03:00 PM","04:00 PM","05:00 PM","06:00 PM","07:00 PM","08:00 PM","09:00 PM"];
+    const booked = ["09:00 AM","02:00 PM"];
+    document.getElementById('slot-grid').innerHTML = times.map(s => {
+        const isBooked = booked.includes(s);
+        if (isBooked) return `<button disabled class="slot-btn p-3 border-2 border-gray-100 rounded-xl text-xs font-black opacity-30 cursor-not-allowed bg-gray-100 line-through">${s}</button>`;
+        return `<button onclick="toggleSlot(this,'${s}')" class="slot-btn p-3 border-2 border-gray-100 rounded-xl text-xs font-black uppercase transition hover:border-black">${s}</button>`;
+    }).join('');
+}
+function toggleSlot(el, s) {
+    if (selectedSlots.includes(s)) {
+        selectedSlots = selectedSlots.filter(i => i !== s);
+        el.classList.remove('selected');
+    } else {
+        selectedSlots.push(s);
+        el.classList.add('selected');
+    }
+    updateSummary();
+}
+function updateSummary() {
+    const total = selectedSlots.length * currentRate;
+    document.getElementById('total-price').innerText = `₹${total}`;
+    if (selectedSlots.length === 0) {
+        document.getElementById('sum-slots').innerHTML = '<span class="text-gray-400 italic">No slots selected yet</span>';
+    } else {
+        document.getElementById('sum-slots').innerHTML = selectedSlots.map(s =>
+            `<span class="inline-block bg-black text-white text-[10px] font-black px-2 py-1 rounded-lg mr-1 mb-1">${s}</span>`
+        ).join('');
+    }
+}
+function goToPayment() {
+    const name = document.getElementById('b-name').value.trim();
+    const phone = document.getElementById('b-phone').value.trim();
+    if (!name || !phone) { alert('Please fill in your name and phone number.'); return; }
+    if (selectedSlots.length === 0) { alert('Please select at least one time slot.'); return; }
+    const total = selectedSlots.length * currentRate;
+    document.getElementById('pay-facility-label').innerText = selectedFacility;
+    document.getElementById('pay-slots-label').innerText = selectedSlots.join(' · ');
+    document.getElementById('pay-total').innerText = `₹${total}`;
+    showStep('step2');
+}
+function backToBooking() { showStep('step1'); }
+function selectPayMethod(el) {
+    document.querySelectorAll('.pay-method').forEach(m => {
+        m.classList.remove('selected');
+        m.querySelector('.check-icon').classList.add('text-transparent');
+        m.querySelector('.check-icon').classList.remove('volt-text');
+    });
+    el.classList.add('selected');
+    el.querySelector('.check-icon').classList.remove('text-transparent');
+    el.querySelector('.check-icon').classList.add('volt-text');
+}
+function confirmPayment() {
+    const total = selectedSlots.length * currentRate;
+    const name = document.getElementById('b-name').value.trim();
+    document.getElementById('conf-facility').innerText = selectedFacility;
+    document.getElementById('conf-date').innerText = document.getElementById('sum-date').innerText;
+    document.getElementById('conf-slots').innerText = selectedSlots.join(', ');
+    document.getElementById('conf-amount').innerText = `₹${total}`;
+    document.getElementById('confirm-msg').innerText = `Thanks ${name}! Your slot is confirmed.`;
+    showStep('step3');
+}
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBooking(); });
+</script>
+</body>
+</html>

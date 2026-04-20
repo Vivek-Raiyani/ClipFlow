@@ -1,18 +1,29 @@
-import Hero from "./components/Hero";
-import Features from "./components/Features";
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import HowItWorks from './components/HowItWorks';
+import Waitlist from './components/Waitlist';
+import Footer from './components/Footer';
 
 export default function Page() {
   return (
-    <main>
-      <Hero />
-      <Features />
-      
-      {/* Feature Sections can be added here */}
-      <section className="container" style={{ padding: '8rem 2rem' }}>
-        <div style={{ textAlign: 'center', opacity: 0.5 }}>
-          <p>Trusted by the world&apos;s most secure content teams</p>
-        </div>
-      </section>
-    </main>
+    <>
+      {/* Fixed ambient orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      {/* Grain texture */}
+      <div className="grain" />
+
+      <Navbar />
+
+      <main style={{ position: 'relative', zIndex: 2 }}>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <Waitlist />
+      </main>
+
+      <Footer />
+    </>
   );
 }

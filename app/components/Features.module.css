@@ -1,67 +1,78 @@
 .featuresSection {
-  padding: 8rem 2rem;
+  padding: 100px 0;
   background: var(--bg-color);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 4rem;
-}
-
-.card {
-  padding: 3rem 2rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  border-color: var(--primary);
-}
-
-.iconContainer {
-  width: 4rem;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  background: hsla(263, 70%, 50%, 0.1);
-  border-radius: 1rem;
-  border: 1px solid hsla(263, 70%, 50%, 0.2);
-}
-
-.cardTitle {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.cardText {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.9rem;
-  line-height: 1.6;
 }
 
 .sectionHeader {
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto;
+  margin-bottom: 60px;
 }
 
 .sectionTitle {
-  font-family: var(--font-serif);
-  font-size: 3.5rem;
+  font-size: 56px;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(to bottom, #fff, rgba(255,255,255,0.5));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  line-height: 1.07143;
+  letter-spacing: -0.005em;
+  color: var(--fg-color);
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--card-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(180%);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.iconContainer {
+  font-size: 40px;
+  margin-bottom: 24px;
+}
+
+.cardTitle {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.16667;
+  letter-spacing: 0.009em;
+  color: var(--fg-color);
+  margin-bottom: 12px;
+}
+
+.cardText {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.47059;
+  letter-spacing: -0.022em;
+  color: var(--fg-secondary);
+}
+
+@media (max-width: 1068px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 734px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .sectionTitle {
+    font-size: 40px;
+  }
 }

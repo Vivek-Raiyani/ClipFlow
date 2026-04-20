@@ -5,141 +5,332 @@ import { db } from "@/lib/db";
 import { projects, projectFiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
-import { 
-  ShieldCheck, 
-  Zap, 
-  FolderGit2, 
-  Video, 
+import {
+  ShieldCheck,
+  Zap,
+  FolderGit2,
+  Video,
   ArrowUpRight,
-  TrendingUp
+  LayoutGrid,
 } from "lucide-react";
 
 export default async function DashboardPage() {
   const user = await syncUser();
   if (!user) return null;
 
-  // Fetch dynamic stats
-  const userProjects = await db.select().from(projects).where(eq(projects.creatorId, user.id));
-  
-  const files = await db.select()
+  const userProjects = await db
+    .select()
+    .from(projects)
+    .where(eq(projects.creatorId, user.id));
+
+  const files = await db
+    .select()
     .from(projectFiles)
     .innerJoin(projects, eq(projectFiles.projectId, projects.id))
     .where(eq(projects.creatorId, user.id));
 
-  const pendingReview = files.filter(f => f.project_files.status === "pending").length;
-  const recentActivity = files.filter(f => {
+  const pendingReview = files.filter(
+    (f) => f.project_files.status === "pending"
+  ).length;
+  const recentActivity = files.filter((f) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return new Date(f.project_files.createdAt) > oneDayAgo;
   }).length;
 
   return (
-    <div className="space-y-16 max-w-6xl mx-auto">
-      {/* Page Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 w-fit">
-            <TrendingUp className="w-3 h-3 text-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-primary font-mono">System Nominal</span>
-          </div>
-          <h1 className="text-6xl font-serif font-medium tracking-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent italic">
-            Overview
-          </h1>
-          <p className="text-white/40 text-sm max-w-md leading-relaxed">
-            Manage your high-performance creation workflows and monitor processing nodes in real-time.
-          </p>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-4">
-          {!user.youtubeRefreshToken && (
-            <Link 
-              href="/api/auth/youtube"
-              className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.05] hover:border-white/20 transition-all group"
+    <div style={{ minHeight: "100vh", background: "var(--bg-deep)" }}>
+      {/* Ambient orbs */}
+      <div
+        style={{
+          position: "fixed",
+          top: "-10%",
+          left: "-5%",
+          width: 500,
+          height: 500,
+          background: "rgba(168,85,247,0.07)",
+          borderRadius: "50%",
+          filter: "blur(120px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          bottom: "-10%",
+          right: "-5%",
+          width: 600,
+          height: 400,
+          background: "rgba(236,72,153,0.05)",
+          borderRadius: "50%",
+          filter: "blur(120px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: 1120,
+          margin: "0 auto",
+          padding: "80px 24px 60px",
+        }}
+      >
+        {/* ─── Page Header ─── */}
+        <header
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 24,
+            marginBottom: 48,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 10,
+              }}
             >
-              <Video className="w-4 h-4 text-[#FF0000]" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/70">Connect YouTube</span>
-              <ArrowUpRight className="w-3 h-3 text-white/20 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </Link>
-          )}
-          
-          <CreateProjectButton />
-        </div>
-      </header>
-
-      {/* Primary Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <StatCard 
-          title="Pending Review" 
-          value={pendingReview.toString()} 
-          description="Awaiting final production sign-off"
-          icon={ShieldCheck}
-          accent="primary"
-        />
-        <StatCard 
-          title="Daily Throughput" 
-          value={recentActivity.toString()} 
-          description="Assets processed in 24h cycle"
-          icon={Zap}
-          accent="secondary"
-        />
-        <StatCard 
-          title="Active Pipelines" 
-          value={userProjects.length.toString()} 
-          description="Configured project environments"
-          icon={FolderGit2}
-          accent="accent"
-        />
-      </section>
-
-      {/* Projects Section */}
-      <section className="space-y-8">
-        <div className="flex justify-between items-end border-b border-white/5 pb-6">
-          <div className="space-y-2">
-            <h2 className="text-2xl font-serif italic text-white/90">Recent Deployments</h2>
-            <p className="text-[10px] text-white/30 font-mono uppercase tracking-[0.2em]">Latest workspace activity</p>
+              <LayoutGrid
+                style={{ width: 14, height: 14, color: "#a855f7" }}
+              />
+              <span
+                style={{
+                  fontSize: 11,
+                  fontFamily: "var(--font-mono)",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "#a855f7",
+                }}
+              >
+                Dashboard
+              </span>
+            </div>
+            <h1
+              style={{
+                fontSize: "clamp(32px, 5vw, 48px)",
+                fontWeight: 600,
+                letterSpacing: "-0.03em",
+                color: "var(--text-primary)",
+                marginBottom: 8,
+              }}
+            >
+              Overview
+            </h1>
+            <p
+              style={{
+                fontSize: 15,
+                color: "var(--text-secondary)",
+                maxWidth: 420,
+                lineHeight: 1.6,
+              }}
+            >
+              Monitor and manage your high-performance creation workflows.
+            </p>
           </div>
-          <Link href="/dashboard/projects" className="group flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-            Portfolio <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-          </Link>
-        </div>
-        
-        <div className="rounded-3xl bg-white/[0.02] border border-white/5 p-2 backdrop-blur-sm">
-          <ProjectList creatorId={user.id} />
-        </div>
-      </section>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            {!user.youtubeRefreshToken && (
+              <Link
+                href="/api/auth/youtube"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 18px",
+                  borderRadius: 9999,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.03)",
+                  color: "var(--text-secondary)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <Video style={{ width: 14, height: 14, color: "#ef4444" }} />
+                Connect YouTube
+                <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
+              </Link>
+            )}
+            <CreateProjectButton />
+          </div>
+        </header>
+
+        {/* ─── Stats Grid ─── */}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 16,
+            marginBottom: 48,
+          }}
+        >
+          <StatCard
+            title="Pending Review"
+            value={pendingReview.toString()}
+            description="Awaiting your approval"
+            icon={ShieldCheck}
+            accent="#a855f7"
+          />
+          <StatCard
+            title="Daily Throughput"
+            value={recentActivity.toString()}
+            description="Assets processed in 24 h"
+            icon={Zap}
+            accent="#ec4899"
+          />
+          <StatCard
+            title="Active Pipelines"
+            value={userProjects.length.toString()}
+            description="Configured projects"
+            icon={FolderGit2}
+            accent="#22c55e"
+          />
+        </section>
+
+        {/* ─── Projects List ─── */}
+        <section>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              paddingBottom: 20,
+              marginBottom: 24,
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontSize: 20,
+                  fontWeight: 600,
+                  letterSpacing: "-0.02em",
+                  color: "var(--text-primary)",
+                  marginBottom: 4,
+                }}
+              >
+                Recent Projects
+              </h2>
+              <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                Your latest storage and publishing nodes
+              </p>
+            </div>
+            <Link
+              href="/dashboard/projects"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#a855f7",
+                textDecoration: "none",
+                opacity: 0.8,
+              }}
+            >
+              All Projects
+              <ArrowUpRight style={{ width: 12, height: 12 }} />
+            </Link>
+          </div>
+
+          <div
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 18,
+              overflow: "hidden",
+            }}
+          >
+            <ProjectList creatorId={user.id} />
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
 
-function StatCard({ title, value, description, icon: Icon, accent }: { title: string; value: string; description: string; icon: any; accent: 'primary' | 'secondary' | 'accent' }) {
-  const accentColors = {
-    primary: "text-primary",
-    secondary: "text-secondary",
-    accent: "text-accent"
-  };
-
+function StatCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  accent,
+}: {
+  title: string;
+  value: string;
+  description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: any;
+  accent: string;
+}) {
   return (
-    <div className="group relative overflow-hidden rounded-[2.5rem] bg-white/[0.02] border border-white/5 p-8 hover:bg-white/[0.04] transition-all duration-500 hover:-translate-y-1">
-      {/* Background Decor */}
-      <div className={`absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity ${accentColors[accent]}`}>
-        <Icon size={120} strokeWidth={1} />
+    <div
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderRadius: 18,
+        padding: 28,
+        display: "flex",
+        flexDirection: "column",
+        gap: 20,
+        transition: "border-color 0.2s, box-shadow 0.2s",
+      }}
+    >
+      {/* Icon */}
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 10,
+          background: `${accent}18`,
+          border: `1px solid ${accent}30`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: accent,
+        }}
+      >
+        <Icon style={{ width: 18, height: 18 }} />
       </div>
-      
-      <div className="relative z-10 space-y-6">
-        <div className={`w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-colors ${accentColors[accent]}`}>
-          <Icon className="w-6 h-6" />
+
+      {/* Value */}
+      <div>
+        <div
+          style={{
+            fontSize: "clamp(36px, 5vw, 52px)",
+            fontWeight: 600,
+            letterSpacing: "-0.04em",
+            color: "var(--text-primary)",
+            lineHeight: 1,
+            marginBottom: 6,
+          }}
+        >
+          {value}
         </div>
-        
-        <div>
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-5xl font-mono tracking-tighter text-white font-medium">{value}</h3>
-            <div className={`w-1.5 h-1.5 rounded-full ${accentColors[accent]} animate-pulse`} />
-          </div>
-          <p className="text-xs font-semibold text-white/80 mt-2 uppercase tracking-wide">{title}</p>
+        <div
+          style={{
+            fontSize: 12,
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: accent,
+            marginBottom: 4,
+          }}
+        >
+          {title}
         </div>
-        
-        <p className="text-[10px] text-white/30 font-mono uppercase tracking-widest leading-none">
+        <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
           {description}
-        </p>
+        </div>
       </div>
     </div>
   );
