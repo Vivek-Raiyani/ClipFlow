@@ -9,6 +9,14 @@ const inter = Inter({
   display: "swap",
 });
 
+import { Playfair_Display } from "next/font/google";
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "ClipFlow | The Secure Content Firewall for Creators",
   description:
@@ -31,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={inter.variable}>
+      <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
         <head>
           <link
             href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"

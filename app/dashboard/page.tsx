@@ -48,21 +48,7 @@ export default async function DashboardPage() {
           left: "-5%",
           width: 500,
           height: 500,
-          background: "rgba(168,85,247,0.07)",
-          borderRadius: "50%",
-          filter: "blur(120px)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          bottom: "-10%",
-          right: "-5%",
-          width: 600,
-          height: 400,
-          background: "rgba(236,72,153,0.05)",
+          background: "rgba(0,0,0,0.01)",
           borderRadius: "50%",
           filter: "blur(120px)",
           pointerEvents: "none",
@@ -96,19 +82,20 @@ export default async function DashboardPage() {
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                marginBottom: 10,
+                marginBottom: 12,
               }}
             >
               <LayoutGrid
-                style={{ width: 14, height: 14, color: "#a855f7" }}
+                style={{ width: 14, height: 14, color: "#000" }}
               />
               <span
                 style={{
                   fontSize: 11,
                   fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.15em",
                   textTransform: "uppercase",
-                  color: "#a855f7",
+                  color: "#000",
+                  opacity: 0.4
                 }}
               >
                 Dashboard
@@ -116,24 +103,26 @@ export default async function DashboardPage() {
             </div>
             <h1
               style={{
-                fontSize: "clamp(32px, 5vw, 48px)",
-                fontWeight: 600,
-                letterSpacing: "-0.03em",
+                fontSize: "clamp(40px, 6vw, 64px)",
+                fontWeight: 500,
+                letterSpacing: "-0.02em",
                 color: "var(--text-primary)",
-                marginBottom: 8,
+                marginBottom: 12,
+                fontFamily: "var(--font-serif)"
               }}
             >
               Overview
             </h1>
             <p
               style={{
-                fontSize: 15,
+                fontSize: 17,
                 color: "var(--text-secondary)",
-                maxWidth: 420,
+                maxWidth: 480,
                 lineHeight: 1.6,
+                fontWeight: 400
               }}
             >
-              Monitor and manage your high-performance creation workflows.
+              Monitor and manage your high-performance creation workflows with precision and ease.
             </p>
           </div>
 
@@ -147,8 +136,8 @@ export default async function DashboardPage() {
                   gap: 8,
                   padding: "10px 18px",
                   borderRadius: 9999,
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  background: "rgba(0,0,0,0.02)",
                   color: "var(--text-secondary)",
                   fontSize: 13,
                   fontWeight: 500,
@@ -156,7 +145,7 @@ export default async function DashboardPage() {
                   transition: "all 0.2s ease",
                 }}
               >
-                <Video style={{ width: 14, height: 14, color: "#ef4444" }} />
+                <Video style={{ width: 14, height: 14, color: "#000" }} />
                 Connect YouTube
                 <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
               </Link>
@@ -170,8 +159,8 @@ export default async function DashboardPage() {
                   gap: 8,
                   padding: "10px 18px",
                   borderRadius: 9999,
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  background: "rgba(0,0,0,0.02)",
                   color: "var(--text-secondary)",
                   fontSize: 13,
                   fontWeight: 500,
@@ -179,7 +168,7 @@ export default async function DashboardPage() {
                   transition: "all 0.2s ease",
                 }}
               >
-                <Cloud style={{ width: 14, height: 14, color: "#3b82f6" }} />
+                <Cloud style={{ width: 14, height: 14, color: "#000" }} />
                 Connect Drive
                 <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
               </Link>
@@ -192,9 +181,9 @@ export default async function DashboardPage() {
         <section
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-            marginBottom: 48,
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 24,
+            marginBottom: 64,
           }}
         >
           <StatCard
@@ -202,21 +191,21 @@ export default async function DashboardPage() {
             value={pendingReview.toString()}
             description="Awaiting your approval"
             icon={ShieldCheck}
-            accent="#a855f7"
+            accent="#000"
           />
           <StatCard
             title="Daily Throughput"
             value={recentActivity.toString()}
             description="Assets processed in 24 h"
             icon={Zap}
-            accent="#ec4899"
+            accent="#000"
           />
           <StatCard
             title="Active Pipelines"
             value={userProjects.length.toString()}
             description="Configured projects"
             icon={FolderGit2}
-            accent="#22c55e"
+            accent="#000"
           />
         </section>
 
@@ -227,9 +216,9 @@ export default async function DashboardPage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-end",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
-              paddingBottom: 20,
-              marginBottom: 24,
+              borderBottom: "1px solid rgba(0,0,0,0.06)",
+              paddingBottom: 24,
+              marginBottom: 32,
             }}
           >
             <div>
@@ -256,9 +245,9 @@ export default async function DashboardPage() {
                 gap: 4,
                 fontSize: 13,
                 fontWeight: 500,
-                color: "#a855f7",
+                color: "#000",
                 textDecoration: "none",
-                opacity: 0.8,
+                opacity: 0.4,
               }}
             >
               All Projects
@@ -268,10 +257,11 @@ export default async function DashboardPage() {
 
           <div
             style={{
-              background: "rgba(255,255,255,0.02)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 18,
+              background: "rgba(255,255,255,1)",
+              border: "1px solid rgba(0,0,0,0.04)",
+              borderRadius: 24,
               overflow: "hidden",
+              boxShadow: "0 2px 20px rgba(0,0,0,0.02)"
             }}
           >
             <ProjectList creatorId={user.id} />
@@ -299,60 +289,63 @@ function StatCard({
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 18,
-        padding: 28,
+        background: "#ffffff",
+        border: "1px solid rgba(0,0,0,0.04)",
+        borderRadius: 24,
+        padding: 32,
         display: "flex",
         flexDirection: "column",
-        gap: 20,
-        transition: "border-color 0.2s, box-shadow 0.2s",
+        gap: 24,
+        transition: "transform 0.2s, box-shadow 0.2s",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.01)"
       }}
     >
       {/* Icon */}
       <div
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 10,
-          background: `${accent}18`,
-          border: `1px solid ${accent}30`,
+          width: 48,
+          height: 48,
+          borderRadius: 14,
+          background: `#f5f5f7`,
+          border: `1px solid rgba(0,0,0,0.04)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: accent,
+          color: "#000",
         }}
       >
-        <Icon style={{ width: 18, height: 18 }} />
+        <Icon style={{ width: 22, height: 22 }} />
       </div>
 
       {/* Value */}
       <div>
         <div
           style={{
-            fontSize: "clamp(36px, 5vw, 52px)",
-            fontWeight: 600,
-            letterSpacing: "-0.04em",
+            fontSize: "clamp(40px, 5vw, 56px)",
+            fontWeight: 500,
+            letterSpacing: "-0.03em",
             color: "var(--text-primary)",
             lineHeight: 1,
-            marginBottom: 6,
+            marginBottom: 8,
+            fontFamily: "var(--font-serif)"
           }}
         >
           {value}
         </div>
         <div
           style={{
-            fontSize: 12,
+            fontSize: 11,
             fontFamily: "var(--font-mono)",
-            letterSpacing: "0.08em",
+            letterSpacing: "0.12em",
             textTransform: "uppercase",
-            color: accent,
-            marginBottom: 4,
+            color: "#000",
+            opacity: 0.4,
+            marginBottom: 6,
           }}
         >
           {title}
         </div>
-        <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+        <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 400 }}>
           {description}
         </div>
       </div>

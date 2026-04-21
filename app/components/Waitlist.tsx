@@ -90,7 +90,7 @@ export default function Waitlist() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>
@@ -140,18 +140,27 @@ export default function Waitlist() {
           )}
         </div>
 
-        {/* Social proof */}
+        {/* Social proof pill */}
         <div className="reveal reveal-delay-4" style={{
-          marginTop: '56px',
-          display: 'flex',
-          justifyContent: 'center',
+          marginTop: '120px',
+          display: 'inline-flex',
           alignItems: 'center',
-          gap: '32px',
-          opacity: 0.25,
-          filter: 'grayscale(1)',
+          gap: '50px',
+          padding: '12px 40px',
+          background: 'rgba(0, 0, 0, 0.02)',
+          border: '2px solid rgba(0, 0, 0, 0.05)',
+          borderRadius: '9999px',
+          // filter: 'grayscale(1)',
+          opacity: 0.35
         }}>
           {['YouTube', 'Dropbox', 'Drive', 'Cloudflare'].map(s => (
-            <span key={s} style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+            <span key={s} style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase'
+            }}>
               {s}
             </span>
           ))}

@@ -36,36 +36,35 @@ export default function CreateProjectButton() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-8 py-4 bg-white text-black rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-white/10 flex items-center gap-3 group"
+        className="px-8 py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black/90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-black/10 flex items-center gap-3 group"
       >
         <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" />
         New Project
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-          <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] max-w-lg w-full p-12 relative overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-[#FAF9F6] border border-black/5 rounded-[2.5rem] max-w-lg w-full p-12 relative overflow-hidden shadow-2xl">
             {/* Ambient Depth Orbs */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/5 blur-[80px] rounded-full -ml-24 -mb-24 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-black/[0.02] blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
             
             <button 
                 onClick={() => setIsOpen(false)}
-                className="absolute top-8 right-8 p-2 rounded-full hover:bg-white/5 text-white/20 hover:text-white transition-all"
+                className="absolute top-8 right-8 p-2 rounded-full hover:bg-black/5 text-black/20 hover:text-black transition-all"
             >
                 <X className="w-5 h-5" />
             </button>
 
             <div className="relative z-10 space-y-12">
               <header className="space-y-4">
-                <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 w-fit">
-                    <Terminal className="w-3 h-3 text-white/40" />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 font-mono italic">Protocol Initialization</span>
+                <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-black/[0.03] border border-black/5 w-fit">
+                    <Terminal className="w-3 h-3 text-black/40" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-black/40 font-mono italic">Protocol Initialization</span>
                 </div>
-                <h2 className="font-serif text-5xl font-medium tracking-tight bg-gradient-to-br from-white to-white/40 bg-clip-text text-transparent italic">
+                <h2 className="font-serif text-5xl font-medium tracking-tight text-black italic">
                     Establish Pipeline
                 </h2>
-                <p className="text-white/40 text-sm leading-relaxed max-w-sm font-sans">
+                <p className="text-black/40 text-sm leading-relaxed max-w-sm font-sans">
                     Define a high-performance environment for your next creative evolution.
                 </p>
               </header>
@@ -73,10 +72,10 @@ export default function CreateProjectButton() {
               <form onSubmit={handleCreate} className="space-y-12">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <label className="block text-white/30 text-[9px] uppercase tracking-[0.2em] font-bold font-mono">
+                    <label className="block text-black/30 text-[9px] uppercase tracking-[0.2em] font-bold font-mono">
                         Pipeline Identifier
                     </label>
-                    <span className="text-[9px] font-mono text-white/10 italic">Unique Namespace</span>
+                    <span className="text-[9px] font-mono text-black/10 italic">Unique Namespace</span>
                   </div>
                   <div className="relative group">
                     <input 
@@ -84,25 +83,25 @@ export default function CreateProjectButton() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g. CINEMATIC_VLOG_04" 
-                        className="w-full bg-white/[0.02] border border-white/5 rounded-2xl p-6 focus:border-white/20 focus:bg-white/[0.04] outline-none transition-all font-serif text-2xl text-white placeholder:text-white/5"
+                        className="w-full bg-black/[0.02] border border-black/5 rounded-2xl p-6 focus:border-black/10 focus:bg-black/[0.03] outline-none transition-all font-serif text-2xl text-black placeholder:text-black/[0.05]"
                         required
                         autoFocus
                     />
-                    <Command className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-white/5 group-focus-within:text-white/20 transition-colors" />
+                    <Command className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-black/5 group-focus-within:text-black/20 transition-colors" />
                   </div>
                 </div>
                 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-5">
                   <button 
                     type="submit" 
                     disabled={loading || !title}
-                    className="w-full py-6 bg-white text-black rounded-2xl font-bold tracking-[0.25em] uppercase text-[10px] hover:bg-white/90 active:scale-[0.98] transition-all disabled:opacity-20 disabled:grayscale flex items-center justify-center gap-3 shadow-lg shadow-white/5"
+                    className="w-full py-6 bg-black text-white rounded-2xl font-bold tracking-[0.25em] uppercase text-[10px] hover:bg-black/90 active:scale-[0.98] transition-all disabled:opacity-20 disabled:grayscale flex items-center justify-center gap-3 shadow-lg shadow-black/5"
                   >
                     {loading ? (
                         <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:-0.3s]" />
-                            <div className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:-0.15s]" />
-                            <div className="w-1.5 h-1.5 bg-black rounded-full animate-bounce" />
+                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
+                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]" />
+                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-bounce" />
                         </div>
                     ) : (
                         <>
@@ -111,7 +110,7 @@ export default function CreateProjectButton() {
                         </>
                     )}
                   </button>
-                  <p className="text-center text-[9px] font-mono text-white/10 uppercase tracking-[0.2em]">
+                  <p className="text-center text-[9px] font-mono text-black/10 uppercase tracking-[0.2em]">
                     By initializing, you agree to the deployment protocols.
                   </p>
                 </div>
@@ -119,7 +118,8 @@ export default function CreateProjectButton() {
             </div>
           </div>
         </div>
-      )}
+      )
+}
 
       <style jsx>{`
         @keyframes fadeIn {

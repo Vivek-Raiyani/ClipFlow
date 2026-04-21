@@ -24,10 +24,10 @@ export default function Navbar() {
       alignItems: 'center',
       justifyContent: 'center',
       transition: 'background 0.3s ease, border-color 0.3s ease',
-      background: scrolled ? 'rgba(5,5,5,0.85)' : 'transparent',
+      background: scrolled ? 'rgba(250,249,246, 0.8)' : 'transparent',
       backdropFilter: scrolled ? 'blur(20px)' : 'none',
       WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-      borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+      borderBottom: scrolled ? '1px solid rgba(0,0,0,0.05)' : '1px solid transparent',
     }}>
       <div style={{
         width: '100%',
@@ -44,11 +44,11 @@ export default function Navbar() {
           textDecoration: 'none',
         }}>
           <div style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '8px',
-            background: 'linear-gradient(135deg, rgba(168,85,247,0.5), rgba(236,72,153,0.4))',
-            border: '1px solid rgba(255,255,255,0.1)',
+            width: '32px',
+            height: '32px',
+            borderRadius: '10px',
+            background: '#000',
+            border: '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -101,24 +101,24 @@ export default function Navbar() {
             fontSize: '13px',
             color: 'var(--text-secondary)',
             textDecoration: 'none',
-            padding: '7px 14px',
+            padding: '8px 16px',
             borderRadius: '9999px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid rgba(0,0,0,0.06)',
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
-            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.2)';
-            (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,0,0,0.1)';
+            (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.02)';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
-            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)';
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,0,0,0.06)';
             (e.currentTarget as HTMLElement).style.background = 'transparent';
           }}>
             Dashboard
           </Link>
-          <Link href="/sign-up" className="btn btn-primary" style={{ fontSize: '13px', padding: '7px 16px' }}>
+          <Link href="/sign-up" className="btn btn-ghost" style={{ fontSize: '13px', padding: '7px 16px' }}>
             Get Started
           </Link>
         </div>

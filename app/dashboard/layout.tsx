@@ -39,17 +39,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Header/Logo Section */}
         <div className="h-20 flex items-center justify-between px-8 mb-4">
           <Link href="/dashboard" className="group flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-              <Activity className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <Activity className="w-6 h-6 text-white" />
             </div>
             <div className="flex flex-col">
               <span className="font-serif text-xl font-bold tracking-tight leading-none">ClipFlow</span>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-white/40 mt-1 font-medium italic">Pro Suite</span>
+              <span className="text-[9px] uppercase tracking-[0.25em] text-black/30 mt-1 font-medium italic">Pro Suite</span>
             </div>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-full hover:bg-white/5 text-white/40 transition-colors"
+            className="lg:hidden p-2 rounded-full hover:bg-black/5 text-black/40 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -58,8 +58,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Navigation Section */}
         <div className="flex-1 px-4 overflow-y-auto space-y-1 custom-scrollbar">
           <div className="px-4 py-3">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/20 mb-4">Workspace</h3>
-            <div className="space-y-1">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-black/20 mb-4">Workspace</h3>
+            <div className="space-y-3">
               <NavLink href="/dashboard" icon={LayoutDashboard} active={pathname === "/dashboard"}>Overview</NavLink>
               <NavLink href="/dashboard/projects" icon={Folder} active={pathname.startsWith("/dashboard/projects")}>Projects</NavLink>
               <NavLink href="/dashboard/analytics" icon={BarChart} active={pathname.startsWith("/dashboard/analytics")}>Analytics</NavLink>
@@ -67,8 +67,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="px-4 py-8">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/20 mb-4">Management</h3>
-            <div className="space-y-1">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-black/20 mb-6">Management</h3>
+            <div className="space-y-3">
               <NavLink href="/dashboard/users" icon={Users} active={pathname.startsWith("/dashboard/users")}>Team</NavLink>
               <NavLink href="/dashboard/settings" icon={Settings} active={pathname.startsWith("/dashboard/settings")}>Settings</NavLink>
             </div>
@@ -77,18 +77,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Footer/User Section */}
         <div className="p-6">
-          <div className="p-1 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03]">
+          <div className="p-1 rounded-2xl bg-black/[0.01] border border-black/5 backdrop-blur-sm">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02]">
               <div className="flex items-center gap-3">
-                <div className="p-0.5 rounded-full ring-1 ring-white/10">
+                <div className="p-0.5 rounded-full ring-1 ring-black/10">
                   <UserButton appearance={{ elements: { userButtonAvatarBox: "w-8 h-8 rounded-full" } }} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-semibold text-white/90">Personal Account</span>
-                  <span className="text-[9px] text-accent/80 font-mono">Status: Active</span>
+                  <span className="text-[11px] font-semibold text-black/90">Personal Account</span>
+                  <span className="text-[9px] text-black/40 font-mono tracking-tight text-accent/80 font-mono">Status: Active</span>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-white/20" />
+              <ChevronRight className="w-4 h-4 text-black/20" />
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Scrollable Content Container */}
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
           {/* Subtle Ambient Depth */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-primary/5 blur-[120px] rounded-full -z-10 opacity-50" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-black/[0.01] blur-[120px] rounded-full -z-10 opacity-50" />
           
           <div className="max-w-[1600px] mx-auto min-h-full">
             <div className="p-6 md:p-10 lg:p-12 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
@@ -119,13 +119,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           
           {/* Subtle page footer */}
-          <footer className="p-12 mt-auto border-t border-white/5 flex flex-col items-center gap-4">
-             <div className="flex items-center gap-6 opacity-40 text-[10px] uppercase tracking-widest font-medium">
-                <span className="hover:text-white transition-colors cursor-pointer">Support</span>
-                <span className="hover:text-white transition-colors cursor-pointer">API Docs</span>
-                <span className="hover:text-white transition-colors cursor-pointer">Security</span>
+          <footer className="p-12 mt-auto border-t border-black/5 flex flex-col items-center gap-4">
+             <div className="flex items-center gap-6 opacity-30 text-[10px] uppercase tracking-[0.2em] font-medium text-black">
+                <span className="hover:text-black transition-colors cursor-pointer">Support</span>
+                <span className="hover:text-black transition-colors cursor-pointer">API Docs</span>
+                <span className="hover:text-black transition-colors cursor-pointer">Security</span>
              </div>
-             <p className="text-[10px] text-white/20 font-mono italic">v2.4.1 // build_stable_0420</p>
+             <p className="text-[10px] text-black/20 font-mono italic">v2.4.1 // build_stable_0420</p>
           </footer>
         </div>
       </main>
@@ -139,17 +139,17 @@ function NavLink({ href, icon: Icon, children, active }: { href: string; icon: a
     <Link
       href={href}
       className={`
-        group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ease-out
+        group flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 ease-out
         ${active 
-          ? "bg-white/[0.06] text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]" 
-          : "text-white/40 hover:text-white hover:bg-white/[0.03]"}
+          ? "bg-black/5 text-black shadow-sm" 
+          : "text-black/40 hover:text-black hover:bg-black/[0.03]"}
       `}
     >
       <div className="flex items-center gap-4">
-        <Icon className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 ${active ? "text-primary" : "text-inherit opacity-50 group-hover:opacity-100"}`} />
-        <span className="text-sm font-medium tracking-tight whitespace-nowrap">{children}</span>
+        <Icon className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 ${active ? "text-black" : "text-inherit opacity-40 group-hover:opacity-100"}`} />
+        <span className="text-[15px] font-medium tracking-tight whitespace-nowrap">{children}</span>
       </div>
-      {active && <div className="w-1 h-4 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.5)] animate-in fade-in zoom-in duration-300" />}
+      {active && <div className="w-1.5 h-1.5 bg-black rounded-full shadow-sm animate-in fade-in zoom-in duration-300" />}
     </Link>
   );
 }

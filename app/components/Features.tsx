@@ -118,29 +118,28 @@ export default function Features() {
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '16px',
+          gap: '24px',
         }}>
           {features.map((f, i) => (
             <div
               key={f.tag}
               className={`reveal reveal-delay-${Math.min(i + 1, 4)}`}
               style={{
-                background: 'rgba(255,255,255,0.025)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: '18px',
-                padding: '28px',
-                transition: 'border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease',
+                background: '#ffffff',
+                border: '1px solid rgba(0,0,0,0.04)',
+                borderRadius: '24px',
+                padding: '36px',
+                transition: 'transform 0.25s ease, box-shadow 0.25s ease',
                 cursor: 'default',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.01)'
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.13)';
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(168,85,247,0.1)';
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)';
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.04)';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)';
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)';
-                (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.01)';
               }}
             >
               {/* Icon + Tag row */}
@@ -148,41 +147,43 @@ export default function Features() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                marginBottom: '20px',
+                marginBottom: '28px',
               }}>
                 <div style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '12px',
-                  background: 'rgba(168,85,247,0.1)',
-                  border: '1px solid rgba(168,85,247,0.15)',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '14px',
+                  background: '#FAF9F6',
+                  border: '1px solid rgba(0,0,0,0.04)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#a855f7',
+                  color: '#000',
                 }}>
                   {f.icon}
                 </div>
                 <span style={{
                   fontSize: '11px',
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--text-muted)',
-                  letterSpacing: '0.05em',
+                  color: 'rgba(0,0,0,0.3)',
+                  letterSpacing: '0.15em',
                 }}>{f.tag}</span>
               </div>
 
               <h3 style={{
-                fontSize: '16px',
-                fontWeight: 600,
-                letterSpacing: '-0.02em',
-                marginBottom: '10px',
+                fontSize: '20px',
+                fontWeight: 500,
+                letterSpacing: '-0.01em',
+                marginBottom: '12px',
                 color: 'var(--text-primary)',
+                fontFamily: 'var(--font-serif)'
               }}>{f.title}</h3>
 
               <p style={{
-                fontSize: '14px',
+                fontSize: '15px',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.65,
+                lineHeight: 1.6,
+                fontWeight: 400
               }}>{f.description}</p>
             </div>
           ))}

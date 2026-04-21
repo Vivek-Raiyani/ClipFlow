@@ -22,12 +22,13 @@ export default function Hero() {
 
       {/* Headline */}
       <h1 className="reveal visible" style={{
-        fontSize: 'clamp(42px, 7vw, 84px)',
-        fontWeight: 600,
-        letterSpacing: '-0.03em',
-        lineHeight: 1.06,
-        maxWidth: '780px',
-        marginBottom: '22px',
+        fontSize: 'clamp(48px, 8vw, 92px)',
+        fontWeight: 500,
+        letterSpacing: '-0.02em',
+        lineHeight: 1.04,
+        maxWidth: '840px',
+        marginBottom: '28px',
+        fontFamily: 'var(--font-serif)'
       }}>
         Your Channel&apos;s{' '}
         <span className="gradient-text">Security Layer.</span>
@@ -52,15 +53,36 @@ export default function Hero() {
       {/* CTAs */}
       <div className="reveal visible reveal-delay-2" style={{
         display: 'flex',
-        gap: '12px',
+        gap: '16px',
         flexWrap: 'wrap',
         justifyContent: 'center',
         marginBottom: '72px',
       }}>
-        <a href="#demo" className="btn btn-primary" style={{ padding: '13px 28px', fontSize: '14px' }}>
+        <a 
+          href="#demo" 
+          className="btn" 
+          style={{ 
+            padding: '13px 32px', 
+            fontSize: '14px',
+            background: 'rgba(168,85,247,0.08)',
+            border: '1px solid rgba(168,85,247,0.15)',
+            color: '#a855f7',
+            transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#000';
+            e.currentTarget.style.color = '#fff';
+            e.currentTarget.style.borderColor = '#000';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'rgba(168,85,247,0.08)';
+            e.currentTarget.style.color = '#a855f7';
+            e.currentTarget.style.borderColor = 'rgba(168,85,247,0.15)';
+          }}
+        >
           Start Interactive Demo
         </a>
-        <a href="#waitlist" className="btn btn-ghost" style={{ padding: '13px 28px', fontSize: '14px' }}>
+        <a href="#waitlist" className="btn btn-ghost" style={{ padding: '13px 32px', fontSize: '14px' }}>
           Join Waitlist
         </a>
       </div>
@@ -69,17 +91,17 @@ export default function Hero() {
       <div className="reveal visible reveal-delay-3 animate-float" style={{
         width: '100%',
         maxWidth: '820px',
-        borderRadius: '18px',
+        borderRadius: '24px',
         overflow: 'hidden',
-        background: 'rgba(12,12,12,0.8)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 8px 80px rgba(0,0,0,0.7), 0 0 60px rgba(168,85,247,0.08)',
+        background: '#ffffff',
+        border: '1px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 20px 80px rgba(0,0,0,0.04)',
       }}>
         {/* Window Chrome */}
         <div style={{
           height: '44px',
-          background: 'rgba(0,0,0,0.5)',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          background: '#f5f5f7',
+          borderBottom: '1px solid rgba(0,0,0,0.03)',
           display: 'flex',
           alignItems: 'center',
           padding: '0 16px',
@@ -95,13 +117,13 @@ export default function Hero() {
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(0,0,0,0.02)',
+            border: '1px solid rgba(0,0,0,0.04)',
             borderRadius: '6px',
             padding: '4px 12px',
           }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(74,222,128,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.35)' }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(0,0,0,0.25)' }}>
               clipflow.app/dashboard
             </span>
           </div>
@@ -113,16 +135,16 @@ export default function Hero() {
           {/* Sidebar */}
           <div style={{
             width: '200px',
-            background: 'rgba(0,0,0,0.3)',
-            borderRight: '1px solid rgba(255,255,255,0.05)',
-            padding: '20px 14px',
+            background: '#fafafa',
+            borderRight: '1px solid rgba(0,0,0,0.04)',
+            padding: '24px 16px',
             flexShrink: 0,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
               <div style={{
-                width: 30, height: 30,
+                width: 34, height: 34,
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                background: '#000',
                 flexShrink: 0,
               }} />
               <div>
@@ -140,9 +162,9 @@ export default function Hero() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '8px 10px',
-                  borderRadius: '8px',
-                  background: item.active ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  background: item.active ? 'rgba(0,0,0,0.04)' : 'transparent',
                   fontSize: '12px',
                   color: item.active ? 'var(--text-primary)' : 'var(--text-secondary)',
                   fontWeight: item.active ? 500 : 400,
@@ -151,11 +173,11 @@ export default function Hero() {
                   {item.label}
                   {item.badge && (
                     <span style={{
-                      background: '#ec4899',
+                      background: '#000',
                       color: '#fff',
                       fontSize: '9px',
                       fontWeight: 700,
-                      padding: '1px 5px',
+                      padding: '2px 6px',
                       borderRadius: '4px',
                     }}>{item.badge}</span>
                   )}
@@ -184,8 +206,8 @@ export default function Hero() {
 
             {/* Video Card */}
             <div style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.07)',
+              background: '#faf9f6',
+              border: '1px solid rgba(0,0,0,0.04)',
               borderRadius: '12px',
               padding: '16px',
               display: 'flex',
@@ -224,11 +246,11 @@ export default function Hero() {
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'center' }}>
                   <span style={{
                     fontSize: '9px', fontFamily: 'var(--font-mono)', fontWeight: 700,
-                    color: '#eab308',
-                    background: 'rgba(234,179,8,0.08)',
-                    border: '1px solid rgba(234,179,8,0.2)',
+                    color: '#000',
+                    background: 'rgba(0,0,0,0.04)',
+                    border: '1px solid rgba(0,0,0,0.06)',
                     padding: '2px 7px', borderRadius: '4px',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.12em',
                   }}>NEEDS REVIEW</span>
                   <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>Uploaded 2h ago</span>
                 </div>
