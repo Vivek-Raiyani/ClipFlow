@@ -28,6 +28,15 @@ export const creatorEditorRelationships = pgTable("creator_editor_relationships"
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const invitations = pgTable("invitations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  creatorId: uuid("creator_id").references(() => users.id).notNull(),
+  email: text("email").notNull(),
+  projectId: uuid("project_id"), // Will reference project if it's a project-specific invite
+  status: text("status").default("pending").notNull(), // pending, accepted, rejected
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: text("title").notNull(),

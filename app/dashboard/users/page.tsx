@@ -9,14 +9,49 @@ import {
   Circle,
   Network
 } from "lucide-react";
+import { InviteNodeButton } from "@/app/components/InviteNodeButton";
+import { db } from "@/lib/db";
+import { creatorEditorRelationships, users, invitations } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function TeamPage() {
   const user = await syncUser();
   if (!user) return null;
 
-  const mockTeam = [
-    { id: "1", name: "Lead Editor", role: "Manager", status: "Active" },
-    { id: "2", name: "Content Planner", role: "Collaborator", status: "Invited" },
+  // Fetch active relations
+  const relationships = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      status: creatorEditorRelationships.status,
+    })
+    .from(creatorEditorRelationships)
+    .innerJoin(users, eq(creatorEditorRelationships.editorId, users.id))
+    .where(eq(creatorEditorRelationships.creatorId, user.id));
+
+  // Fetch pending invitations
+  const pendingInvites = await db
+    .select()
+    .from(invitations)
+    .where(eq(invitations.creatorId, user.id));
+
+  const allTeam = [
+    ...relationships.map((r) => ({
+      id: r.id,
+      name: r.name || "Unknown",
+      role: r.role === 'editor' ? 'Editor' : 'Creator',
+      status: 'Active', 
+      email: r.email,
+    })),
+    ...pendingInvites.map((i) => ({
+      id: i.id,
+      name: i.email,
+      role: 'Pending Node',
+      status: i.status === 'pending' ? 'Pending' : 'Accepted',
+      email: i.email,
+    })).filter(i => i.status === 'Pending')
   ];
 
   return (
@@ -35,10 +70,7 @@ export default async function TeamPage() {
           </p>
         </div>
         
-        <button className="px-8 py-4 bg-white text-black rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-white/5 flex items-center gap-3 group">
-          <UserPlus className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-          Invite Node
-        </button>
+        <InviteNodeButton />
       </header>
 
       <section className="space-y-6">
@@ -61,16 +93,23 @@ export default async function TeamPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.03]">
-              {mockTeam.map((member) => (
+              {allTeam.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-8 py-12 text-center text-white/40 text-sm font-mono uppercase tracking-widest italic">
+                    Network Registry Empty
+                  </td>
+                </tr>
+              )}
+              {allTeam.map((member) => (
                 <tr key={member.id} className="group hover:bg-white/[0.03] transition-all relative">
                   <td className="px-8 py-10">
                     <div className="flex items-center gap-6">
                       <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center font-serif text-2xl text-white/10 group-hover:text-accent group-hover:border-accent/20 transition-all duration-500 transform group-hover:scale-105">
-                        {member.name.charAt(0)}
+                        {member.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="space-y-1">
-                        <p className="font-serif text-2xl text-white/90 group-hover:text-white transition-colors">{member.name}</p>
-                        <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest italic">Node ID: {member.id}</p>
+                        <p className="font-serif text-xl md:text-2xl text-white/90 group-hover:text-white transition-colors">{member.name}</p>
+                        <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest italic">{member.email}</p>
                       </div>
                     </div>
                   </td>
@@ -89,12 +128,9 @@ export default async function TeamPage() {
                     </div>
                   </td>
                   <td className="px-8 py-10 text-right">
-                    <Link 
-                      href={`/dashboard/users/${member.id}`}
-                      className="inline-flex items-center gap-3 px-6 py-2 rounded-xl border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all group/btn"
-                    >
-                      Authorize <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform text-accent" />
-                    </Link>
+                    <button className="inline-flex items-center gap-3 px-6 py-2 rounded-xl border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/20 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all group/btn">
+                      {member.status === 'Active' ? 'Manage' : 'Resend'} <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform text-accent" />
+                    </button>
                   </td>
                 </tr>
               ))}
