@@ -14,6 +14,8 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").default("editor").notNull(),
   youtubeAccessToken: text("youtube_access_token"),
   youtubeRefreshToken: text("youtube_refresh_token"),
+  driveAccessToken: text("drive_access_token"),
+  driveRefreshToken: text("drive_refresh_token"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

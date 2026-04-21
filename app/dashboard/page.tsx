@@ -12,6 +12,7 @@ import {
   Video,
   ArrowUpRight,
   LayoutGrid,
+  Cloud,
 } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -157,6 +158,29 @@ export default async function DashboardPage() {
               >
                 <Video style={{ width: 14, height: 14, color: "#ef4444" }} />
                 Connect YouTube
+                <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
+              </Link>
+            )}
+            {!user.driveRefreshToken && (
+              <Link
+                href="/api/auth/drive"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 18px",
+                  borderRadius: 9999,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.03)",
+                  color: "var(--text-secondary)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <Cloud style={{ width: 14, height: 14, color: "#3b82f6" }} />
+                Connect Drive
                 <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
               </Link>
             )}
