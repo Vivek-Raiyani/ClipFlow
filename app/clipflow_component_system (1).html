@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #FAF9F6;
+    --bg2: #F5F4F0;
+    --fg: #0a0a0a;
+    --fg2: rgba(0,0,0,0.4);
+    --fg3: rgba(0,0,0,0.2);
+    --fg4: rgba(0,0,0,0.08);
+    --border: rgba(0,0,0,0.06);
+    --border2: rgba(0,0,0,0.12);
+    --mono: 'SF Mono', 'Fira Code', monospace;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, sans-serif;
+    --r: 20px;
+    --r2: 14px;
+    --r3: 9999px;
+  }
+  body { background: var(--bg); font-family: var(--sans); color: var(--fg); padding: 40px 32px; }
+  
+  .section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--fg3);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section { margin-bottom: 52px; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px;
+    background: #0a0a0a; color: #fff;
+    border: none; border-radius: var(--r3);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-primary:hover { background: #222; transform: scale(1.02); }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary svg { transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .btn-primary:hover svg { transform: rotate(90deg); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 26px;
+    background: transparent; color: var(--fg);
+    border: 1px solid var(--border2); border-radius: var(--r3);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-ghost:hover { border-color: var(--fg); background: rgba(0,0,0,0.02); }
+
+  .btn-danger {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: transparent; color: #dc2626;
+    border: 1px solid rgba(220,38,38,0.25); border-radius: 8px;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-danger:hover { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.4); }
+
+  .btn-success {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: transparent; color: #16a34a;
+    border: 1px solid rgba(22,163,74,0.25); border-radius: 8px;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-success:hover { background: rgba(22,163,74,0.06); border-color: rgba(22,163,74,0.4); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: var(--fg4); border: 1px solid var(--border);
+    border-radius: var(--r3);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg2);
+  }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .badge-black { background: #0a0a0a; color: #fff; border-color: transparent; }
+  .badge-green { color: #16a34a; border-color: rgba(22,163,74,0.2); background: rgba(22,163,74,0.06); }
+  .badge-amber { color: #b45309; border-color: rgba(180,83,9,0.2); background: rgba(180,83,9,0.06); }
+  .badge-red { color: #dc2626; border-color: rgba(220,38,38,0.2); background: rgba(220,38,38,0.06); }
+
+  /* ── INPUT ── */
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-label {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg3);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .input-label span { font-style: italic; color: var(--fg4); }
+  .input-field {
+    width: 100%; padding: 18px 22px;
+    background: rgba(0,0,0,0.02); border: 1px solid var(--border);
+    border-radius: var(--r2);
+    font-family: var(--serif); font-size: 20px; color: var(--fg);
+    outline: none; transition: all 0.2s ease;
+  }
+  .input-field::placeholder { color: rgba(0,0,0,0.08); }
+  .input-field:focus { border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.03); }
+
+  /* ── MODAL ── */
+  .modal-shell {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 32px; padding: 44px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.06);
+    max-width: 440px;
+  }
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: none; background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg3); transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--fg4); color: var(--fg); }
+  .modal-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: var(--r3);
+    background: var(--fg4); border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .modal-pill span {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg3);
+    font-style: italic;
+  }
+  .modal-title {
+    font-family: var(--serif); font-size: 38px;
+    font-weight: 400; letter-spacing: -0.02em;
+    color: var(--fg); line-height: 1.1; font-style: italic;
+    margin-bottom: 8px;
+  }
+  .modal-sub {
+    font-size: 13px; color: var(--fg2); line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  /* ── FILE CARD ── */
+  .file-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 20px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .file-card:hover { border-color: var(--border2); box-shadow: 0 4px 20px rgba(0,0,0,0.04); transform: translateY(-1px); }
+  .thumbnail {
+    width: 108px; height: 62px; border-radius: 10px;
+    background: #e0ddd8; flex-shrink: 0;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-inner { width: 100%; height: 100%; background: linear-gradient(135deg, #d8d5cf 0%, #c8c5bf 100%); }
+  .thumb-play {
+    position: absolute; width: 22px; height: 22px;
+    border-radius: 50%; background: rgba(255,255,255,0.85);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-duration {
+    position: absolute; bottom: 5px; right: 7px;
+    font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.7);
+  }
+  .file-meta { flex: 1; min-width: 0; }
+  .file-badges { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .file-name { font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-detail { font-family: var(--mono); font-size: 10px; color: var(--fg3); }
+
+  /* ── PROJECT CARD ── */
+  .project-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 32px; border-bottom: 1px solid var(--border);
+    transition: all 0.2s ease; cursor: pointer; position: relative;
+    overflow: hidden;
+  }
+  .project-card::before {
+    content: ''; position: absolute; left: 0; top: 50%; 
+    transform: translateY(-50%) scaleY(0);
+    width: 3px; height: 40px; border-radius: 0 3px 3px 0;
+    background: var(--fg); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .project-card:hover::before { transform: translateY(-50%) scaleY(1); }
+  .project-card:hover { background: rgba(0,0,0,0.01); }
+  .project-avatar {
+    width: 64px; height: 64px; border-radius: 18px;
+    background: var(--fg4); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 28px; color: var(--fg3);
+    transition: all 0.3s ease; flex-shrink: 0;
+  }
+  .project-card:hover .project-avatar { color: var(--fg); border-color: var(--border2); transform: scale(1.05) rotate(2deg); }
+  .project-title {
+    font-family: var(--serif); font-size: 26px; font-weight: 700;
+    color: rgba(0,0,0,0.8); letter-spacing: -0.01em;
+    margin-bottom: 6px; transition: color 0.2s;
+  }
+  .project-card:hover .project-title { color: var(--fg); }
+  .project-meta { display: flex; align-items: center; gap: 16px; }
+  .project-meta-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg3);
+  }
+  .project-status { text-align: right; }
+  .project-status-label {
+    font-family: var(--mono); font-size: 9px; text-transform: uppercase;
+    letter-spacing: 0.25em; color: var(--fg3); margin-bottom: 6px; font-weight: 700;
+  }
+  .project-status-value {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .status-active { color: var(--fg); display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .chevron {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 1px solid var(--border); display: flex; align-items: center;
+    justify-content: center; color: var(--fg3); flex-shrink: 0;
+    transition: all 0.2s ease; margin-left: 24px;
+  }
+  .project-card:hover .chevron { border-color: var(--border2); color: var(--fg); transform: translateX(3px); }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 2px dashed var(--border2); border-radius: var(--r);
+    padding: 48px 32px; text-align: center; cursor: pointer;
+    transition: all 0.3s ease; position: relative; overflow: hidden;
+  }
+  .upload-zone:hover { border-color: rgba(0,0,0,0.25); background: rgba(0,0,0,0.01); }
+  .upload-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: var(--bg2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 22px;
+    transition: all 0.3s ease;
+  }
+  .upload-zone:hover .upload-icon { border-color: var(--border2); transform: translateY(-2px); }
+  .upload-title { font-family: var(--serif); font-size: 17px; color: var(--fg); margin-bottom: 4px; }
+  .upload-sub { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--fg3); font-weight: 700; }
+  .type-tabs {
+    display: flex; gap: 2px; padding: 4px;
+    background: rgba(0,0,0,0.03); border-radius: 12px;
+    border: 1px solid var(--border); margin-bottom: 14px;
+  }
+  .type-tab {
+    flex: 1; padding: 8px; border: none; background: transparent;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--fg3); cursor: pointer; border-radius: 9px;
+    transition: all 0.2s;
+  }
+  .type-tab.active { background: white; color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  /* ── FEATURE CARD ── */
+  .feature-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px;
+    transition: all 0.25s ease; cursor: default;
+  }
+  .feature-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.05); }
+  .feature-icon-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; color: var(--fg);
+  }
+  .feature-tag { font-family: var(--mono); font-size: 10px; color: var(--fg3); letter-spacing: 0.15em; }
+  .feature-title { font-family: var(--serif); font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--fg); margin-bottom: 10px; }
+  .feature-desc { font-size: 14px; color: var(--fg2); line-height: 1.65; }
+
+  /* ── HOW IT WORKS ── */
+  .step-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+  .step {
+    padding: 36px 30px;
+    border: 1px solid var(--border);
+    background: white; position: relative; overflow: hidden;
+  }
+  .step:first-child { border-radius: 16px 0 0 16px; }
+  .step:last-child { border-radius: 0 16px 16px 0; }
+  .step::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .step:nth-child(1)::before { background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent); }
+  .step:nth-child(2)::before { background: linear-gradient(90deg, transparent, rgba(236,72,153,0.35), transparent); }
+  .step:nth-child(3)::before { background: linear-gradient(90deg, transparent, rgba(34,197,94,0.35), transparent); }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.05em; margin-bottom: 18px;
+  }
+  .step-num-1 { background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); color: #a855f7; }
+  .step-num-2 { background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); color: #ec4899; }
+  .step-num-3 { background: rgba(34,197,94,0.09); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
+  .step-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--fg); margin-bottom: 10px; }
+  .step-desc { font-size: 13px; color: var(--fg2); line-height: 1.7; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 8px 0 36px; }
+</style>
+</head>
+<body>
+
+<div class="section">
+  <div class="section-label">01 — Buttons</div>
+  <div class="row">
+    <button class="btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Project
+    </button>
+    <button class="btn-ghost">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Invite Editor
+    </button>
+    <button class="btn-danger">Reject</button>
+    <button class="btn-success">Approve</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">02 — Status Badges</div>
+  <div class="row" style="align-items: center;">
+    <span class="badge"><span class="badge-dot" style="background:#0a0a0a"></span>Pending</span>
+    <span class="badge badge-black"><span class="badge-dot" style="background:#fff"></span>1 File</span>
+    <span class="badge badge-green"><span class="badge-dot"></span>Approved</span>
+    <span class="badge badge-amber"><span class="badge-dot"></span>Needs Review</span>
+    <span class="badge badge-red"><span class="badge-dot"></span>Rejected</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">03 — Input Field</div>
+  <div class="input-group" style="max-width: 420px;">
+    <div class="input-label">
+      Pipeline Identifier
+      <span>Unique Namespace</span>
+    </div>
+    <div style="position: relative;">
+      <input class="input-field" placeholder="e.g. CINEMATIC_VLOG_04" />
+      <svg style="position:absolute; right:18px; top:50%; transform:translateY(-50%);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">04 — Create Project Modal</div>
+  <div class="modal-shell">
+    <button class="modal-close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-pill">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>Protocol Initialization</span>
+    </div>
+    <div class="modal-title">Establish Pipeline</div>
+    <div class="modal-sub">Define a high-performance environment for your next creative evolution.</div>
+    <div class="input-group" style="margin-bottom: 32px;">
+      <div class="input-label">Pipeline Identifier <span>Unique Namespace</span></div>
+      <div style="position:relative;">
+        <input class="input-field" placeholder="e.g. CINEMATIC_VLOG_04" style="font-size:20px;" />
+      </div>
+    </div>
+    <button class="btn-primary" style="width:100%; justify-content:center; padding:18px; border-radius:14px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2l-.55-.55"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+      Initialize Core
+    </button>
+    <p style="text-align:center; font-family: var(--mono); font-size:9px; color:var(--fg3); margin-top:14px; letter-spacing:0.15em; text-transform:uppercase;">By initializing, you agree to the deployment protocols.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">05 — File Review Card (FileActions)</div>
+  <div style="max-width: 600px;">
+    <div class="file-card">
+      <div class="thumbnail">
+        <div class="thumb-inner"></div>
+        <div class="thumb-play">
+          <svg width="8" height="9" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg>
+        </div>
+        <div class="thumb-duration">10:24</div>
+      </div>
+      <div class="file-meta">
+        <div class="file-badges">
+          <span class="badge badge-amber" style="font-size:9px;"><span class="badge-dot"></span>Needs Review</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--fg3);">Uploaded 2h ago</span>
+        </div>
+        <div class="file-name">"I built a SaaS in 24 hours" — Final_v3.mp4</div>
+        <div class="file-detail">2.4 GB · @Editor_Mike · Ready to push</div>
+      </div>
+      <div style="display:flex; gap:8px; flex-shrink:0;">
+        <button class="btn-danger">Reject</button>
+        <button class="btn-success">Approve</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">06 — Project List Item (ProjectList)</div>
+  <div style="background:white; border:1px solid var(--border); border-radius:20px; overflow:hidden;">
+    <div class="project-card">
+      <div style="display:flex; align-items:center; gap:28px;">
+        <div class="project-avatar">C</div>
+        <div>
+          <div class="project-title">Cinematic Vlog 04</div>
+          <div class="project-meta">
+            <div class="project-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Apr 23, 2026
+            </div>
+            <div style="width:4px;height:4px;border-radius:50%;background:var(--border2);"></div>
+            <div class="project-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Private
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:24px;">
+        <div class="project-status">
+          <div class="project-status-label">Pipeline Status</div>
+          <div class="status-active project-status-value">
+            <span>Operational</span>
+            <span class="status-dot"></span>
+          </div>
+        </div>
+        <div class="chevron">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="project-card" style="opacity:0.5;">
+      <div style="display:flex; align-items:center; gap:28px;">
+        <div class="project-avatar">T</div>
+        <div>
+          <div class="project-title">Travel Diary EP 7</div>
+          <div class="project-meta">
+            <div class="project-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Mar 10, 2026
+            </div>
+            <div style="width:4px;height:4px;border-radius:50%;background:var(--border2);"></div>
+            <div class="project-meta-item">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Public
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:24px;">
+        <div class="project-status">
+          <div class="project-status-label">Pipeline Status</div>
+          <div class="project-status-value" style="color:var(--fg3);">Archived</div>
+        </div>
+        <div class="chevron">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">07 — Upload Zone (UploadZone)</div>
+  <div style="max-width: 480px;">
+    <div class="type-tabs">
+      <button class="type-tab active">Raw</button>
+      <button class="type-tab">Draft</button>
+      <button class="type-tab">Final</button>
+    </div>
+    <div class="upload-zone">
+      <div class="upload-icon">🛰️</div>
+      <div class="upload-title">Beam Data to R2</div>
+      <div class="upload-sub" style="margin-top:4px;">Zero Egress Publication Protocol</div>
+    </div>
+    <button class="btn-ghost" style="width:100%; justify-content:center; margin-top:12px; border-radius:14px; padding:14px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+      Import from Google Drive
+    </button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">08 — Features Grid (Features)</div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+    <div class="feature-card">
+      <div class="feature-icon-row">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span class="feature-tag">01</span>
+      </div>
+      <div class="feature-title">Decoupled Access</div>
+      <div class="feature-desc">Editors upload to your secure firewall. You approve from yours.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-row">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <span class="feature-tag">02</span>
+      </div>
+      <div class="feature-title">Zero Egress Fees</div>
+      <div class="feature-desc">Built on Cloudflare R2. Move massive 4K files without paying a cent.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon-row">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <span class="feature-tag">03</span>
+      </div>
+      <div class="feature-title">One-Click Publish</div>
+      <div class="feature-desc">Review, set visibility, and push to YouTube with a single tap.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">09 — How It Works Steps (HowItWorks)</div>
+  <div class="step-row">
+    <div class="step">
+      <div class="step-num step-num-1">01</div>
+      <div class="step-title">Editor uploads</div>
+      <div class="step-desc">Your editor gets a secure link. Drag-and-drop — no account needed.</div>
+    </div>
+    <div class="step">
+      <div class="step-num step-num-2">02</div>
+      <div class="step-title">You review & approve</div>
+      <div class="step-desc">Get notified. Open ClipFlow, preview on any device, hit Approve.</div>
+    </div>
+    <div class="step">
+      <div class="step-num step-num-3">03</div>
+      <div class="step-title">We publish to YouTube</div>
+      <div class="step-desc">ClipFlow pushes directly via YouTube API. Fast and zero egress.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">10 — Invite Editor Modal (InviteNodeButton)</div>
+  <div class="modal-shell" style="max-width:400px;">
+    <button class="modal-close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" style="font-size:30px; margin-bottom:6px;">Add Editor</div>
+    <div style="font-family:var(--mono); font-size:9px; color:var(--fg3); letter-spacing:0.2em; text-transform:uppercase; font-weight:700; margin-bottom:28px;">Send a secure invitation to join your network.</div>
+    <div class="input-group" style="margin-bottom:24px;">
+      <div class="input-label">
+        <span style="display:flex;align-items:center;gap:6px;">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email Address
+        </span>
+      </div>
+      <input class="input-field" placeholder="editor@example.com" style="font-size:16px; font-family:var(--sans);" />
+    </div>
+    <button class="btn-primary" style="width:100%; justify-content:center; padding:16px; border-radius:14px;">Send Invitation</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.type-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.closest('.type-tabs').querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
