@@ -33,241 +33,103 @@ export default async function DashboardPage() {
   const pendingReview = files.filter(
     (f) => f.project_files.status === "pending"
   ).length;
+  
   const recentActivity = files.filter((f) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return new Date(f.project_files.createdAt) > oneDayAgo;
   }).length;
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg-deep)" }}>
-      {/* Ambient orbs */}
-      <div
-        style={{
-          position: "fixed",
-          top: "-10%",
-          left: "-5%",
-          width: 500,
-          height: 500,
-          background: "rgba(0,0,0,0.01)",
-          borderRadius: "50%",
-          filter: "blur(120px)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
+    <div className="space-y-32 pb-32">
+      {/* ─── Page Header ─── */}
+      <header className="flex flex-col xl:flex-row justify-between items-start gap-16">
+        <div className="space-y-8">
+          <div className="flex items-center gap-3 text-[13px] font-bold uppercase tracking-[0.4em] text-black/40 font-mono">
+            <LayoutGrid className="w-5 h-5" />
+            Control Center
+          </div>
+          <h1 className="text-7xl md:text-9xl font-serif font-bold tracking-tighter text-black leading-[0.85]">
+            Overview
+          </h1>
+          <p className="text-2xl text-black/40 max-w-2xl leading-relaxed font-medium">
+            Monitor and manage your high-performance creation workflows with precision and ease. 
+            Track real-time deployments and team synchronization.
+          </p>
+        </div>
 
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: 1120,
-          margin: "0 auto",
-          padding: "80px 24px 60px",
-        }}
-      >
-        {/* ─── Page Header ─── */}
-        <header
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 24,
-            marginBottom: 48,
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 12,
-              }}
+        <div className="flex flex-wrap gap-6 pt-6">
+          {!user.youtubeRefreshToken && (
+            <Link
+              href="/api/auth/youtube"
+              className="flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-black/[0.03] border border-black/[0.06] text-[11px] font-bold uppercase tracking-widest text-black/60 hover:bg-black/5 transition-all shadow-sm"
             >
-              <LayoutGrid
-                style={{ width: 14, height: 14, color: "#000" }}
-              />
-              <span
-                style={{
-                  fontSize: 11,
-                  fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "#000",
-                  opacity: 0.4
-                }}
-              >
-                Dashboard
-              </span>
-            </div>
-            <h1
-              style={{
-                fontSize: "clamp(40px, 6vw, 64px)",
-                fontWeight: 500,
-                letterSpacing: "-0.02em",
-                color: "var(--text-primary)",
-                marginBottom: 12,
-                fontFamily: "var(--font-serif)"
-              }}
+              <Video className="w-5 h-5" />
+              Connect YouTube
+              <ArrowUpRight className="w-4 h-4 opacity-30" />
+            </Link>
+          )}
+          {!user.driveRefreshToken && (
+            <Link
+              href="/api/auth/drive"
+              className="flex items-center gap-4 px-8 py-5 rounded-[2rem] bg-black/[0.03] border border-black/[0.06] text-[11px] font-bold uppercase tracking-widest text-black/60 hover:bg-black/5 transition-all shadow-sm"
             >
-              Overview
-            </h1>
-            <p
-              style={{
-                fontSize: 17,
-                color: "var(--text-secondary)",
-                maxWidth: 480,
-                lineHeight: 1.6,
-                fontWeight: 400
-              }}
-            >
-              Monitor and manage your high-performance creation workflows with precision and ease.
+              <Cloud className="w-5 h-5" />
+              Connect Drive
+              <ArrowUpRight className="w-4 h-4 opacity-30" />
+            </Link>
+          )}
+          <CreateProjectButton />
+        </div>
+      </header>
+
+      {/* ─── Stats Grid ─── */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <StatCard
+          title="Pending Review"
+          value={pendingReview.toString()}
+          description="Awaiting approval"
+          icon={ShieldCheck}
+          href="/dashboard/review"
+        />
+        <StatCard
+          title="Daily Throughput"
+          value={recentActivity.toString()}
+          description="Assets processed"
+          icon={Zap}
+        />
+        <StatCard
+          title="Active Projects"
+          value={userProjects.length.toString()}
+          description="Live pipelines"
+          icon={FolderGit2}
+          href="/dashboard/projects"
+        />
+      </section>
+
+      {/* ─── Projects List ─── */}
+      <section className="space-y-16">
+        <div className="flex justify-between items-end border-b border-black/[0.05] pb-12">
+          <div className="space-y-3">
+            <h2 className="text-5xl font-serif font-bold text-black tracking-tight">
+              Recent Projects
+            </h2>
+            <p className="text-xl text-black/30 font-medium italic">
+              Your latest storage and publishing nodes
             </p>
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            {!user.youtubeRefreshToken && (
-              <Link
-                href="/api/auth/youtube"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 18px",
-                  borderRadius: 9999,
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  background: "rgba(0,0,0,0.02)",
-                  color: "var(--text-secondary)",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <Video style={{ width: 14, height: 14, color: "#000" }} />
-                Connect YouTube
-                <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
-              </Link>
-            )}
-            {!user.driveRefreshToken && (
-              <Link
-                href="/api/auth/drive"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 18px",
-                  borderRadius: 9999,
-                  border: "1px solid rgba(0,0,0,0.06)",
-                  background: "rgba(0,0,0,0.02)",
-                  color: "var(--text-secondary)",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <Cloud style={{ width: 14, height: 14, color: "#000" }} />
-                Connect Drive
-                <ArrowUpRight style={{ width: 12, height: 12, opacity: 0.4 }} />
-              </Link>
-            )}
-            <CreateProjectButton />
-          </div>
-        </header>
-
-        {/* ─── Stats Grid ─── */}
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 24,
-            marginBottom: 64,
-          }}
-        >
-          <StatCard
-            title="Pending Review"
-            value={pendingReview.toString()}
-            description="Awaiting your approval"
-            icon={ShieldCheck}
-            accent="#000"
-          />
-          <StatCard
-            title="Daily Throughput"
-            value={recentActivity.toString()}
-            description="Assets processed in 24 h"
-            icon={Zap}
-            accent="#000"
-          />
-          <StatCard
-            title="Active Pipelines"
-            value={userProjects.length.toString()}
-            description="Configured projects"
-            icon={FolderGit2}
-            accent="#000"
-          />
-        </section>
-
-        {/* ─── Projects List ─── */}
-        <section>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              borderBottom: "1px solid rgba(0,0,0,0.06)",
-              paddingBottom: 24,
-              marginBottom: 32,
-            }}
+          <Link
+            href="/dashboard/projects"
+            className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.3em] text-black/30 hover:text-black transition-colors pb-2"
           >
-            <div>
-              <h2
-                style={{
-                  fontSize: 20,
-                  fontWeight: 600,
-                  letterSpacing: "-0.02em",
-                  color: "var(--text-primary)",
-                  marginBottom: 4,
-                }}
-              >
-                Recent Projects
-              </h2>
-              <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-                Your latest storage and publishing nodes
-              </p>
-            </div>
-            <Link
-              href="/dashboard/projects"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#000",
-                textDecoration: "none",
-                opacity: 0.4,
-              }}
-            >
-              All Projects
-              <ArrowUpRight style={{ width: 12, height: 12 }} />
-            </Link>
-          </div>
+            All Projects
+            <ArrowUpRight className="w-5 h-5" />
+          </Link>
+        </div>
 
-          <div
-            style={{
-              background: "rgba(255,255,255,1)",
-              border: "1px solid rgba(0,0,0,0.04)",
-              borderRadius: 24,
-              overflow: "hidden",
-              boxShadow: "0 2px 20px rgba(0,0,0,0.02)"
-            }}
-          >
-            <ProjectList creatorId={user.id} />
-          </div>
-        </section>
-      </div>
+        <div className="bg-white border border-black/[0.03] rounded-[4rem] overflow-hidden shadow-[0_12px_60px_rgba(0,0,0,0.03)]">
+          <ProjectList creatorId={user.id} />
+        </div>
+      </section>
     </div>
   );
 }
@@ -277,78 +139,39 @@ function StatCard({
   value,
   description,
   icon: Icon,
-  accent,
+  href,
 }: {
   title: string;
   value: string;
   description: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
-  accent: string;
+  href?: string;
 }) {
-  return (
-    <div
-      style={{
-        background: "#ffffff",
-        border: "1px solid rgba(0,0,0,0.04)",
-        borderRadius: 24,
-        padding: 32,
-        display: "flex",
-        flexDirection: "column",
-        gap: 24,
-        transition: "transform 0.2s, box-shadow 0.2s",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.01)"
-      }}
-    >
-      {/* Icon */}
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          borderRadius: 14,
-          background: `#f5f5f7`,
-          border: `1px solid rgba(0,0,0,0.04)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#000",
-        }}
-      >
-        <Icon style={{ width: 22, height: 22 }} />
+  const Card = (
+    <div className="group bg-white border border-black/[0.03] rounded-[3.5rem] p-12 space-y-12 transition-all duration-500 hover:border-black/10 hover:shadow-[0_50px_100px_rgba(0,0,0,0.04)]">
+      <div className="w-20 h-20 rounded-[2rem] bg-black/[0.02] border border-black/[0.03] flex items-center justify-center text-black group-hover:scale-110 transition-transform duration-500">
+        <Icon className="w-8 h-8" />
       </div>
 
-      {/* Value */}
-      <div>
-        <div
-          style={{
-            fontSize: "clamp(40px, 5vw, 56px)",
-            fontWeight: 500,
-            letterSpacing: "-0.03em",
-            color: "var(--text-primary)",
-            lineHeight: 1,
-            marginBottom: 8,
-            fontFamily: "var(--font-serif)"
-          }}
-        >
+      <div className="space-y-4">
+        <div className="text-8xl font-serif font-bold text-black tracking-tighter leading-none">
           {value}
         </div>
-        <div
-          style={{
-            fontSize: 11,
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: "#000",
-            opacity: 0.4,
-            marginBottom: 6,
-          }}
-        >
-          {title}
-        </div>
-        <div style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 400 }}>
-          {description}
+        <div className="space-y-2">
+           <div className="text-[12px] font-bold uppercase tracking-[0.4em] text-black/40 font-mono">
+             {title}
+           </div>
+           <div className="text-xs text-black/30 font-bold uppercase tracking-widest font-mono italic">
+             {description}
+           </div>
         </div>
       </div>
     </div>
   );
+
+  if (href) {
+    return <Link href={href} className="block">{Card}</Link>;
+  }
+
+  return Card;
 }

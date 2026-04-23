@@ -36,9 +36,9 @@ export default function CreateProjectButton() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-8 py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black/90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-black/10 flex items-center gap-3 group"
+        className="px-10 py-5 bg-black text-white rounded-[2rem] font-bold text-[11px] uppercase tracking-[0.3em] hover:bg-black/90 hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-black/20 flex items-center gap-4 group"
       >
-        <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" />
+        <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
         New Project
       </button>
 
@@ -118,18 +118,7 @@ export default function CreateProjectButton() {
             </div>
           </div>
         </div>
-      )
-}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-in {
-          animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-      `}</style>
+      )}
     </>
   );
 }

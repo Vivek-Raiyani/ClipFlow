@@ -25,12 +25,11 @@ export function InviteNodeButton() {
       if (!res.ok) throw new Error(data.error || "Failed to invite member");
 
       setStatus("success");
-      setMessage("Invitation dispatched successfully.");
+      setMessage("Invitation sent successfully.");
       setTimeout(() => {
         setIsOpen(false);
         setStatus("idle");
         setEmail("");
-        // Optionally trigger a router.refresh() here to show updated pending list
       }, 3000);
     } catch (err: any) {
       setStatus("error");
@@ -42,46 +41,46 @@ export function InviteNodeButton() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-8 py-4 bg-white text-black rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/90 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-white/5 flex items-center gap-3 group"
+        className="px-8 py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-black/5 flex items-center gap-3 group"
       >
-        <UserPlus className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-        Invite Node
+        <UserPlus className="w-4 h-4" />
+        Invite Editor
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-card-bg border border-card-border p-8 rounded-3xl w-full max-w-md shadow-2xl space-y-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/10 backdrop-blur-md">
+          <div className="bg-white border border-black/[0.05] p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl space-y-8 relative animate-in zoom-in duration-300">
             <button 
               onClick={() => setIsOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 text-muted hover:text-white transition-colors"
+              className="absolute top-8 right-8 p-2 rounded-full hover:bg-black/[0.03] text-black/20 hover:text-black transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="space-y-2">
-              <h2 className="text-2xl font-serif italic text-fg-color">Establish Connection</h2>
-              <p className="text-[10px] font-mono text-muted uppercase tracking-widest">
-                Deploy an automated invitation to a new protocol node.
+            <div className="space-y-3">
+              <h2 className="text-3xl font-serif font-bold text-black">Add Editor</h2>
+              <p className="text-[10px] font-mono text-black/40 uppercase tracking-[0.2em] font-bold">
+                Send a secure invitation to join your network.
               </p>
             </div>
 
-            <form onSubmit={handleInvite} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-muted flex items-center gap-2">
-                  <Mail className="w-3 h-3" /> Target Email Vector
+            <form onSubmit={handleInvite} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-black/40 flex items-center gap-2">
+                  <Mail className="w-3 h-3" /> Email Address
                 </label>
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="editor@example.com"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent text-fg-color transition-colors"
+                  className="w-full bg-black/[0.02] border border-black/[0.05] rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-black/20 text-black transition-colors"
                   required
                 />
               </div>
 
               {message && (
-                <div className={`p-4 rounded-xl text-xs font-mono border ${status === 'success' ? 'bg-accent/10 border-accent/20 text-accent' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                <div className={`p-5 rounded-2xl text-xs font-bold border ${status === 'success' ? 'bg-black text-white border-black' : 'bg-red-50/5 border-red-500/10 text-red-500'}`}>
                   {message}
                 </div>
               )}
@@ -89,9 +88,9 @@ export function InviteNodeButton() {
               <button 
                 type="submit" 
                 disabled={status === "loading" || status === "success"}
-                className="w-full py-3 bg-fg-color text-bg-color rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
+                className="w-full py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
               >
-                {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Dispatch Payload'}
+                {status === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Invitation'}
               </button>
             </form>
           </div>
