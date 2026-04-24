@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #FAF9F6;
+  --bg2: #F2F1ED;
+  --white: #ffffff;
+  --fg: #0a0a0a;
+  --fg2: rgba(0,0,0,0.42);
+  --fg3: rgba(0,0,0,0.22);
+  --fg4: rgba(0,0,0,0.07);
+  --border: rgba(0,0,0,0.06);
+  --border2: rgba(0,0,0,0.11);
+  --mono: 'SF Mono','Fira Code',monospace;
+  --serif: Georgia,'Times New Roman',serif;
+  --sans: -apple-system,BlinkMacSystemFont,sans-serif;
+}
+body { background: var(--bg); font-family: var(--sans); color: var(--fg); }
+
+/* ── PAGE SWITCHER ── */
+.page-switcher {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; gap: 4px;
+  padding: 10px 20px;
+  background: rgba(250,249,246,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.page-switcher span {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg3);
+  margin-right: 8px;
+}
+.pg-btn {
+  padding: 6px 14px; border: 1px solid var(--border2);
+  border-radius: 9999px; background: transparent;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--fg2); cursor: pointer; transition: all 0.18s;
+}
+.pg-btn:hover { background: var(--fg4); color: var(--fg); }
+.pg-btn.active { background: var(--fg); color: #fff; border-color: transparent; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ════════════════════════════════
+   PAGE 1 — LANDING
+════════════════════════════════ */
+
+/* Navbar */
+.lp-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  border-bottom: 1px solid transparent;
+  position: sticky; top: 40px; z-index: 10;
+  background: rgba(250,249,246,0.9); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.logo-mark {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--fg); display: flex; align-items: center; justify-content: center;
+}
+.logo-text { font-size: 14px; font-weight: 500; color: var(--fg); letter-spacing: -0.02em; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  padding: 6px 13px; border-radius: 9999px;
+  font-size: 12px; color: var(--fg2); text-decoration: none;
+  transition: all 0.15s; cursor: pointer; border: none; background: transparent;
+}
+.nav-link:hover { color: var(--fg); background: var(--fg4); }
+.nav-cta {
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-dash {
+  padding: 7px 16px; border: 1px solid var(--border2);
+  border-radius: 9999px; font-size: 12px; color: var(--fg2);
+  text-decoration: none; transition: all 0.15s; cursor: pointer;
+}
+.nav-dash:hover { color: var(--fg); border-color: var(--border); background: var(--fg4); }
+.nav-start {
+  padding: 7px 16px; background: var(--fg); color: #fff;
+  border-radius: 9999px; font-size: 12px; font-weight: 500;
+  border: none; cursor: pointer; transition: all 0.15s;
+}
+.nav-start:hover { background: #222; }
+
+/* Hero */
+.hero {
+  min-height: 88vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 32px 60px; text-align: center; position: relative; overflow: hidden;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 13px; border-radius: 9999px;
+  background: var(--fg4); border: 1px solid var(--border2);
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg2);
+  margin-bottom: 28px;
+}
+.hero-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #a855f7; }
+.hero-h1 {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(44px, 7vw, 82px);
+  font-weight: 400; letter-spacing: -0.025em; line-height: 1.04;
+  max-width: 800px; margin-bottom: 26px; color: var(--fg);
+}
+.hero-accent { color: rgba(0,0,0,0.22); }
+.hero-sub {
+  font-size: clamp(15px, 2vw, 18px); color: var(--fg2);
+  max-width: 500px; line-height: 1.68; margin-bottom: 38px;
+}
+.hero-sub strong { color: var(--fg); font-weight: 500; }
+.hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 64px; }
+.cta-primary {
+  padding: 13px 30px; background: var(--fg); color: #fff;
+  border-radius: 9999px; font-size: 13px; font-weight: 500;
+  border: none; cursor: pointer; transition: all 0.18s; text-decoration: none;
+}
+.cta-primary:hover { background: #222; transform: scale(1.02); }
+.cta-ghost {
+  padding: 12px 28px; border: 1px solid var(--border2);
+  border-radius: 9999px; font-size: 13px; color: var(--fg2);
+  background: transparent; cursor: pointer; transition: all 0.18s; text-decoration: none;
+}
+.cta-ghost:hover { border-color: var(--border); color: var(--fg); background: var(--fg4); }
+
+/* App mockup */
+.app-mockup {
+  width: 100%; max-width: 780px;
+  border-radius: 20px; overflow: hidden;
+  background: var(--white); border: 1px solid var(--border);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.05);
+}
+.mock-chrome {
+  height: 40px; background: #f4f3f0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px;
+}
+.mock-dots { display: flex; gap: 5px; }
+.mock-dot { width: 9px; height: 9px; border-radius: 50%; }
+.mock-url {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(0,0,0,0.03); border: 1px solid var(--border);
+  border-radius: 5px; padding: 3px 10px;
+  font-family: var(--mono); font-size: 10px; color: var(--fg3);
+}
+.mock-body { display: flex; height: 300px; }
+.mock-sidebar {
+  width: 180px; background: #f8f7f4;
+  border-right: 1px solid var(--border); padding: 20px 14px; flex-shrink: 0;
+}
+.mock-channel { display: flex; align-items: center; gap: 9px; margin-bottom: 20px; }
+.mock-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--fg); flex-shrink: 0; }
+.mock-ch-name { font-size: 11px; font-weight: 600; color: var(--fg); }
+.mock-ch-sub { font-family: var(--mono); font-size: 9px; color: var(--fg3); margin-top: 1px; }
+.mock-nav-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 10px; border-radius: 10px; font-size: 11px; margin-bottom: 2px;
+}
+.mock-nav-item.active { background: rgba(0,0,0,0.05); color: var(--fg); font-weight: 500; }
+.mock-nav-item:not(.active) { color: var(--fg2); }
+.mock-badge-pill {
+  background: var(--fg); color: #fff;
+  font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 4px;
+}
+.mock-main { flex: 1; padding: 20px; overflow: hidden; }
+.mock-main-title { font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 3px; }
+.mock-main-sub { font-size: 10px; color: var(--fg2); margin-bottom: 16px; }
+.mock-file-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 11px; padding: 14px; display: flex; gap: 13px; align-items: center;
+}
+.mock-thumb {
+  width: 96px; height: 54px; border-radius: 7px;
+  background: linear-gradient(135deg, #ddd8d0 0%, #c8c3ba 100%);
+  flex-shrink: 0; position: relative; display: flex;
+  align-items: center; justify-content: center;
+}
+.mock-play {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  display: flex; align-items: center; justify-content: center;
+}
+.mock-dur {
+  position: absolute; bottom: 4px; right: 5px;
+  font-family: var(--mono); font-size: 8px; color: rgba(255,255,255,0.65);
+}
+.mock-file-name { font-size: 11px; font-weight: 600; color: var(--fg); margin-bottom: 3px; }
+.mock-file-sub { font-family: var(--mono); font-size: 9px; color: var(--fg3); }
+.mock-review-btn {
+  padding: 7px 14px; background: var(--white); border: 1px solid var(--border2);
+  border-radius: 9999px; font-size: 11px; font-weight: 500;
+  color: var(--fg); cursor: pointer; flex-shrink: 0; white-space: nowrap;
+}
+
+/* Section shared */
+.section { padding: 100px 40px; }
+.section-badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 10px; border-radius: 9999px;
+  background: var(--fg4); border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg3);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(28px, 4.5vw, 48px); font-weight: 600;
+  letter-spacing: -0.03em; color: var(--fg); margin-bottom: 14px; line-height: 1.1;
+}
+.section-sub { font-size: 16px; color: var(--fg2); line-height: 1.68; max-width: 460px; }
+
+/* Features */
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px;
+}
+.feat-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 20px; padding: 30px;
+  transition: all 0.22s ease; cursor: default;
+}
+.feat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.04); }
+.feat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.feat-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: var(--bg2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--fg);
+}
+.feat-num { font-family: var(--mono); font-size: 10px; color: var(--fg3); letter-spacing: 0.15em; }
+.feat-title { font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--fg); margin-bottom: 8px; }
+.feat-desc { font-size: 13px; color: var(--fg2); line-height: 1.65; }
+
+/* How it works */
+.hiw-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-top: 52px; }
+.hiw-step {
+  padding: 36px 28px; background: var(--white); border: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.hiw-step:first-child { border-radius: 16px 0 0 16px; }
+.hiw-step:last-child { border-radius: 0 16px 16px 0; }
+.hiw-step::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.hiw-step:nth-child(1)::before { background: linear-gradient(90deg,transparent,rgba(168,85,247,0.5),transparent); }
+.hiw-step:nth-child(2)::before { background: linear-gradient(90deg,transparent,rgba(236,72,153,0.4),transparent); }
+.hiw-step:nth-child(3)::before { background: linear-gradient(90deg,transparent,rgba(34,197,94,0.4),transparent); }
+.hiw-num {
+  width: 34px; height: 34px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em; margin-bottom: 16px;
+}
+.hiw-num-1 { background: rgba(168,85,247,0.09); border: 1px solid rgba(168,85,247,0.2); color: #a855f7; }
+.hiw-num-2 { background: rgba(236,72,153,0.09); border: 1px solid rgba(236,72,153,0.2); color: #ec4899; }
+.hiw-num-3 { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
+.hiw-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--fg); margin-bottom: 9px; }
+.hiw-desc { font-size: 13px; color: var(--fg2); line-height: 1.72; }
+
+/* Waitlist */
+.waitlist-section {
+  padding: 120px 40px; text-align: center; position: relative;
+  border-top: 1px solid var(--border);
+}
+.waitlist-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 500px; height: 240px;
+  background: radial-gradient(ellipse, rgba(168,85,247,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.waitlist-form {
+  position: relative; max-width: 400px; margin: 0 auto;
+}
+.waitlist-input {
+  width: 100%; padding: 15px 120px 15px 20px;
+  border: 1px solid var(--border2); border-radius: 9999px;
+  font-size: 14px; color: var(--fg); background: var(--white);
+  outline: none; transition: border-color 0.2s; font-family: var(--sans);
+}
+.waitlist-input:focus { border-color: rgba(0,0,0,0.2); }
+.waitlist-input::placeholder { color: var(--fg3); }
+.waitlist-submit {
+  position: absolute; right: 5px; top: 5px; bottom: 5px;
+  padding: 0 18px; background: var(--fg); color: #fff;
+  border: none; border-radius: 9999px;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer;
+  transition: background 0.15s;
+}
+.waitlist-submit:hover { background: #222; }
+
+/* Footer */
+.lp-footer {
+  padding: 40px; text-align: center;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.footer-text { font-family: var(--mono); font-size: 9px; color: var(--fg3); letter-spacing: 0.15em; text-transform: uppercase; }
+
+/* ════════════════════════════════
+   PAGE 2 — DASHBOARD
+════════════════════════════════ */
+.dash-layout { display: flex; min-height: 100vh; }
+.dash-sidebar {
+  width: 240px; flex-shrink: 0; border-right: 1px solid var(--border);
+  background: var(--bg); padding: 28px 16px; position: sticky; top: 40px;
+  height: calc(100vh - 40px); overflow-y: auto;
+}
+.dash-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; padding: 0 8px; }
+.dash-logo-mark {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--fg); display: flex; align-items: center; justify-content: center;
+}
+.dash-logo-name { font-size: 14px; font-weight: 500; letter-spacing: -0.02em; }
+.dash-section-label {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--fg3);
+  padding: 0 10px; margin: 20px 0 8px;
+}
+.dash-nav-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 10px; border-radius: 10px; cursor: pointer;
+  font-size: 12px; color: var(--fg2); transition: all 0.15s; margin-bottom: 2px;
+  border: none; background: transparent; width: 100%; text-align: left;
+}
+.dash-nav-item:hover { background: var(--fg4); color: var(--fg); }
+.dash-nav-item.active { background: rgba(0,0,0,0.05); color: var(--fg); font-weight: 500; }
+.dash-nav-left { display: flex; align-items: center; gap: 9px; }
+.dash-count {
+  background: var(--fg); color: #fff;
+  font-family: var(--mono); font-size: 8px; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+}
+.dash-user {
+  margin-top: auto; padding: 12px 10px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; margin-top: 32px;
+}
+.dash-user-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.dash-user-name { font-size: 12px; font-weight: 500; color: var(--fg); }
+.dash-user-role { font-family: var(--mono); font-size: 9px; color: var(--fg3); }
+
+.dash-main { flex: 1; min-width: 0; padding: 40px; background: var(--bg); }
+.dash-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; }
+.dash-header-title { font-family: var(--serif); font-size: 36px; font-style: italic; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 4px; }
+.dash-header-sub { font-family: var(--mono); font-size: 10px; color: var(--fg3); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; }
+.dash-btn-primary {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 22px; background: var(--fg); color: #fff;
+  border: none; border-radius: 9999px; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; transition: all 0.18s;
+}
+.dash-btn-primary:hover { background: #222; transform: scale(1.02); }
+.dash-btn-primary svg { transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.dash-btn-primary:hover svg { transform: rotate(90deg); }
+
+/* Stats row */
+.dash-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 36px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px;
+}
+.stat-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--fg3); margin-bottom: 10px; }
+.stat-value { font-family: var(--serif); font-size: 32px; font-weight: 400; letter-spacing: -0.02em; color: var(--fg); }
+.stat-delta { font-family: var(--mono); font-size: 9px; color: var(--fg3); margin-top: 4px; }
+.stat-delta.up { color: #16a34a; }
+
+/* Project list */
+.dash-proj-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.dash-proj-title { font-size: 13px; font-weight: 600; color: var(--fg); }
+.dash-proj-count { font-family: var(--mono); font-size: 10px; color: var(--fg3); }
+.proj-list { background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+.proj-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 28px; border-bottom: 1px solid var(--border);
+  transition: all 0.18s; cursor: pointer; position: relative; overflow: hidden;
+}
+.proj-row:last-child { border-bottom: none; }
+.proj-row::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%) scaleY(0);
+  width:3px; height:36px; border-radius:0 3px 3px 0;
+  background:var(--fg); transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.proj-row:hover::before { transform:translateY(-50%) scaleY(1); }
+.proj-row:hover { background: rgba(0,0,0,0.008); }
+.proj-left { display: flex; align-items: center; gap: 18px; }
+.proj-avatar-sm {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--fg4); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 22px; color: var(--fg3);
+  transition: all 0.25s; flex-shrink: 0;
+}
+.proj-row:hover .proj-avatar-sm { color: var(--fg); border-color: var(--border2); transform: scale(1.06) rotate(2deg); }
+.proj-name { font-family: var(--serif); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: rgba(0,0,0,0.8); margin-bottom: 4px; }
+.proj-row:hover .proj-name { color: var(--fg); }
+.proj-meta-row { display: flex; align-items: center; gap: 12px; }
+.proj-meta-tag { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg3); display: flex; align-items: center; gap: 5px; }
+.proj-right { display: flex; align-items: center; gap: 20px; }
+.proj-status-wrap { text-align: right; }
+.proj-status-label { font-family: var(--mono); font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--fg3); margin-bottom: 4px; font-weight: 700; }
+.proj-status-val { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.status-active-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--fg); animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.proj-chevron {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--border); display: flex; align-items: center;
+  justify-content: center; color: var(--fg3); transition: all 0.2s;
+}
+.proj-row:hover .proj-chevron { border-color: var(--border2); color: var(--fg); transform: translateX(2px); }
+
+/* ════════════════════════════════
+   PAGE 3 — PROJECT DETAIL
+════════════════════════════════ */
+.pd-layout { display: flex; min-height: 100vh; }
+.pd-main { flex: 1; min-width: 0; padding: 40px; }
+.pd-breadcrumb {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 32px;
+  font-family: var(--mono); font-size: 10px; color: var(--fg3); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700;
+}
+.pd-breadcrumb a { color: var(--fg3); text-decoration: none; cursor: pointer; }
+.pd-breadcrumb a:hover { color: var(--fg); }
+.pd-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.pd-title { font-family: var(--serif); font-size: 42px; font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+.pd-pills { display: flex; align-items: center; gap: 8px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 9999px;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid;
+}
+.pill-active { color: var(--fg); border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.04); }
+.pill-active .pill-dot { width:5px;height:5px;border-radius:50%;background:var(--fg);animation:blink 2s infinite; }
+
+/* Files table */
+.files-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.files-title { font-size: 13px; font-weight: 600; color: var(--fg); }
+.files-count { font-family: var(--mono); font-size: 10px; color: var(--fg3); }
+.files-table { background: var(--white); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+.file-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 24px; border-bottom: 1px solid var(--border);
+  transition: background 0.15s; cursor: pointer;
+}
+.file-row:last-child { border-bottom: none; }
+.file-row:hover { background: rgba(0,0,0,0.008); }
+.file-thumb-sm {
+  width: 80px; height: 46px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, #ddd8d0 0%, #c8c3ba 100%);
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.file-thumb-sm .play-sm {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(255,255,255,0.75);
+  display: flex; align-items: center; justify-content: center;
+}
+.file-thumb-dur { position:absolute; bottom:3px; right:4px; font-family:var(--mono); font-size:7.5px; color:rgba(255,255,255,0.6); }
+.file-info { flex: 1; min-width: 0; }
+.file-row-name { font-size: 13px; font-weight: 600; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.file-row-meta { font-family: var(--mono); font-size: 9px; color: var(--fg3); display: flex; gap: 12px; }
+.file-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.f-btn {
+  padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; transition: all 0.15s; border: 1px solid;
+}
+.f-btn-reject { color: #dc2626; border-color: rgba(220,38,38,0.22); background: transparent; }
+.f-btn-reject:hover { background: rgba(220,38,38,0.06); }
+.f-btn-approve { color: #16a34a; border-color: rgba(22,163,74,0.22); background: transparent; }
+.f-btn-approve:hover { background: rgba(22,163,74,0.06); }
+.f-btn-approved { color: #16a34a; border-color: rgba(22,163,74,0.2); background: rgba(22,163,74,0.05); }
+
+/* Sidebar panel */
+.pd-sidebar {
+  width: 280px; flex-shrink: 0; border-left: 1px solid var(--border);
+  padding: 40px 28px; background: var(--bg);
+}
+.pd-panel { margin-bottom: 36px; }
+.pd-panel-title {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--fg3);
+  margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.pd-panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.pd-panel-key { font-size: 12px; color: var(--fg2); }
+.pd-panel-val { font-family: var(--mono); font-size: 10px; color: var(--fg); font-weight: 700; letter-spacing: 0.05em; }
+
+/* YouTube */
+.yt-connected {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 14px;
+}
+.yt-dot { width: 6px; height: 6px; border-radius: 50%; background: #16a34a; animation: blink 2s infinite; }
+.yt-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #16a34a; }
+.yt-pub-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px;
+  background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2);
+  border-radius: 12px; color: #dc2626; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; transition: all 0.18s;
+}
+.yt-pub-btn:hover { background: rgba(220,38,38,0.12); transform: scale(1.02); }
+
+/* Editor invite panel */
+.editor-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.editor-item:last-child { border-bottom: none; }
+.editor-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--fg4); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--fg2);
+}
+.editor-name { font-size: 12px; font-weight: 500; color: var(--fg); }
+.editor-role { font-family: var(--mono); font-size: 9px; color: var(--fg3); }
+.editor-revoke {
+  margin-left: auto; font-family: var(--mono); font-size: 8.5px;
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--fg3); cursor: pointer; border: none; background: transparent;
+  transition: color 0.15s;
+}
+.editor-revoke:hover { color: #dc2626; }
+</style>
+</head>
+<body>
+
+<!-- Page Switcher -->
+<div class="page-switcher">
+  <span>View —</span>
+  <button class="pg-btn active" onclick="showPage('landing')">Landing Page</button>
+  <button class="pg-btn" onclick="showPage('dashboard')">Dashboard</button>
+  <button class="pg-btn" onclick="showPage('project')">Project Detail</button>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 1 — LANDING
+══════════════════════════════════ -->
+<div class="page active" id="page-landing">
+  <!-- Navbar -->
+  <nav class="lp-nav">
+    <a class="nav-logo" href="#">
+      <div class="logo-mark">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="logo-text">ClipFlow</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="#">Features</a>
+      <a class="nav-link" href="#">How it works</a>
+      <a class="nav-link" href="#">Pricing</a>
+    </div>
+    <div class="nav-cta">
+      <a class="nav-dash" href="#">Dashboard</a>
+      <button class="nav-start">Get Started</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      For paranoid creators
+    </div>
+    <h1 class="hero-h1">
+      Your Channel's<br>
+      <span class="hero-accent">Security Layer.</span>
+    </h1>
+    <p class="hero-sub">
+      Editors upload videos here. You approve them. We push to YouTube via API.
+      <strong>No passwords shared. No 2 GB downloads.</strong>
+    </p>
+    <div class="hero-ctas">
+      <a class="cta-primary" href="#">Start Interactive Demo</a>
+      <a class="cta-ghost" href="#">Join Waitlist</a>
+    </div>
+
+    <!-- Mock app window -->
+    <div class="app-mockup">
+      <div class="mock-chrome">
+        <div class="mock-dots">
+          <div class="mock-dot" style="background:rgba(255,95,86,0.6)"></div>
+          <div class="mock-dot" style="background:rgba(255,189,46,0.6)"></div>
+          <div class="mock-dot" style="background:rgba(39,201,63,0.6)"></div>
+        </div>
+        <div class="mock-url">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          clipflow.app/dashboard
+        </div>
+        <div style="width:40px"></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-sidebar">
+          <div class="mock-channel">
+            <div class="mock-avatar"></div>
+            <div>
+              <div class="mock-ch-name">Main Channel</div>
+              <div class="mock-ch-sub">2.1M Subs</div>
+            </div>
+          </div>
+          <div class="mock-nav-item active">Pending Review <span class="mock-badge-pill">1</span></div>
+          <div class="mock-nav-item">Published</div>
+          <div class="mock-nav-item">Editors</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-main-title">Pending Uploads</div>
+          <div class="mock-main-sub">Files uploaded by <strong>@Editor_Mike</strong> waiting for approval.</div>
+          <div class="mock-file-card">
+            <div class="mock-thumb">
+              <div class="mock-play">
+                <svg width="7" height="8" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg>
+              </div>
+              <div class="mock-dur">10:24</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;gap:7px;align-items:center;margin-bottom:5px;">
+                <span style="font-family:var(--mono);font-size:8px;font-weight:700;background:rgba(180,83,9,0.08);border:1px solid rgba(180,83,9,0.18);color:#b45309;padding:2px 6px;border-radius:4px;letter-spacing:0.12em;">NEEDS REVIEW</span>
+                <span style="font-family:var(--mono);font-size:9px;color:var(--fg3);">Uploaded 2h ago</span>
+              </div>
+              <div class="mock-file-name">"I built a SaaS in 24 hours" — Final_v3.mp4</div>
+              <div class="mock-file-sub">2.4 GB · Ready to push to YouTube</div>
+            </div>
+            <button class="mock-review-btn">Review & Push</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" style="background:var(--bg); border-top:1px solid var(--border);">
+    <div style="text-align:center; margin-bottom:0;">
+      <div class="section-badge">Features</div>
+      <div class="section-title">Engineered for <em style="font-style:italic;color:var(--fg2);">scale</em></div>
+      <p class="section-sub" style="margin: 0 auto;">The technical stack that powers the next generation of content production pipelines.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="feat-num">01</span></div>
+        <div class="feat-title">Decoupled Access</div>
+        <div class="feat-desc">Editors upload to your secure firewall. You approve from yours. No more sharing YouTube passwords.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><span class="feat-num">02</span></div>
+        <div class="feat-title">Zero Egress Fees</div>
+        <div class="feat-desc">Built on Cloudflare R2. Move massive 4K files to YouTube server-to-server without paying a cent.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span class="feat-num">03</span></div>
+        <div class="feat-title">One-Click Publish</div>
+        <div class="feat-desc">Review metadata, set visibility, and push to YouTube with a single tap. The file never touches your device.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div><span class="feat-num">04</span></div>
+        <div class="feat-title">Mobile Approval</div>
+        <div class="feat-desc">Get notified when a video is ready. Preview and hit Publish from your phone, anywhere in the world.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="feat-num">05</span></div>
+        <div class="feat-title">Multi-Editor Teams</div>
+        <div class="feat-desc">Invite unlimited editors with scoped upload-only access. Revoke in one click, no password resets required.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-head"><div class="feat-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="feat-num">06</span></div>
+        <div class="feat-title">Full Audit Trail</div>
+        <div class="feat-desc">Every upload, approval, and publish is timestamped and logged. Know exactly who did what and when.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section" style="border-top:1px solid var(--border);">
+    <div style="text-align:center;">
+      <div class="section-badge">Workflow</div>
+      <div class="section-title">Three steps.<br><em style="color:var(--fg2);font-style:italic;">Zero compromise.</em></div>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-step">
+        <div class="hiw-num hiw-num-1">01</div>
+        <div class="hiw-title">Editor uploads</div>
+        <div class="hiw-desc">Your editor gets a secure upload link. Drag-and-drop the finished video — no account, no credentials needed.</div>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num hiw-num-2">02</div>
+        <div class="hiw-title">You review & approve</div>
+        <div class="hiw-desc">Get a notification. Open ClipFlow on any device, watch the preview, edit the metadata, then hit Approve.</div>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num hiw-num-3">03</div>
+        <div class="hiw-title">We publish to YouTube</div>
+        <div class="hiw-desc">ClipFlow's servers push the file directly to your channel via YouTube API. Fast, secure, zero egress fees.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section class="waitlist-section">
+    <div class="waitlist-glow"></div>
+    <div style="position:relative;">
+      <div class="section-badge" style="margin-bottom:16px;">Private Beta</div>
+      <div class="section-title" style="text-align:center; margin:0 auto 14px;">Don't let slow internet<br><em style="font-style:italic;color:var(--fg2);">stop your upload.</em></div>
+      <p style="font-size:15px;color:var(--fg2);line-height:1.7;text-align:center;margin:0 auto 40px;max-width:400px;">Currently in private beta with 50 YouTubers. Join the list to get early access.</p>
+      <div class="waitlist-form">
+        <input class="waitlist-input" type="email" placeholder="name@studio.com" />
+        <button class="waitlist-submit">Join</button>
+      </div>
+      <div style="margin-top:60px;display:flex;align-items:center;justify-content:center;gap:40px;opacity:0.25;">
+        <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;">YouTube</span>
+        <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;">Dropbox</span>
+        <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;">Drive</span>
+        <span style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;">Cloudflare</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="lp-footer">
+    <div class="footer-text">Built for creators who travel.</div>
+    <div class="footer-text" style="opacity:0.5;">© 2026 ClipFlow Inc.</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 2 — DASHBOARD
+══════════════════════════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="dash-logo">
+        <div class="dash-logo-mark">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="dash-logo-name">ClipFlow</span>
+      </div>
+      <div class="dash-section-label">Workspace</div>
+      <button class="dash-nav-item active">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          All Projects
+        </span>
+        <span class="dash-count">3</span>
+      </button>
+      <button class="dash-nav-item">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Pending Review
+        </span>
+        <span class="dash-count">2</span>
+      </button>
+      <button class="dash-nav-item">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Published
+        </span>
+      </button>
+      <div class="dash-section-label">Team</div>
+      <button class="dash-nav-item">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Editors
+        </span>
+        <span class="dash-count">4</span>
+      </button>
+      <button class="dash-nav-item">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Audit Log
+        </span>
+      </button>
+      <div class="dash-section-label">Account</div>
+      <button class="dash-nav-item">
+        <span class="dash-nav-left">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+          Settings
+        </span>
+      </button>
+      <div class="dash-user">
+        <div class="dash-user-avatar">MK</div>
+        <div>
+          <div class="dash-user-name">Main Channel</div>
+          <div class="dash-user-role">2.1M subscribers</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="dash-main">
+      <div class="dash-header">
+        <div>
+          <div class="dash-header-title">Pipelines</div>
+          <div class="dash-header-sub">3 active projects · Last sync 4m ago</div>
+        </div>
+        <button class="dash-btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Project
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="dash-stats">
+        <div class="stat-card">
+          <div class="stat-label">Pending Review</div>
+          <div class="stat-value">2</div>
+          <div class="stat-delta">files awaiting approval</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Published This Month</div>
+          <div class="stat-value">14</div>
+          <div class="stat-delta up">↑ 3 from last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Editors</div>
+          <div class="stat-value">4</div>
+          <div class="stat-delta">across all projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Storage Used</div>
+          <div class="stat-value">48GB</div>
+          <div class="stat-delta">of 500GB — R2</div>
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div class="dash-proj-header">
+        <div class="dash-proj-title">All Projects</div>
+        <div class="dash-proj-count">3 total</div>
+      </div>
+      <div class="proj-list">
+        <div class="proj-row">
+          <div class="proj-left">
+            <div class="proj-avatar-sm">C</div>
+            <div>
+              <div class="proj-name">Cinematic Vlog 04</div>
+              <div class="proj-meta-row">
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Apr 23, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.15);display:inline-block;"></span>
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Private</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-label">Pipeline Status</div>
+              <div class="proj-status-val"><span>Operational</span><span class="status-active-dot"></span></div>
+            </div>
+            <div class="proj-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-left">
+            <div class="proj-avatar-sm">T</div>
+            <div>
+              <div class="proj-name">Travel Diary EP 7</div>
+              <div class="proj-meta-row">
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Mar 10, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.15);display:inline-block;"></span>
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Public</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-label">Pipeline Status</div>
+              <div class="proj-status-val" style="color:var(--fg3);">Archived</div>
+            </div>
+            <div class="proj-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-left">
+            <div class="proj-avatar-sm">G</div>
+            <div>
+              <div class="proj-name">Gear Review Vol. 2</div>
+              <div class="proj-meta-row">
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Apr 18, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.15);display:inline-block;"></span>
+                <span class="proj-meta-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Private</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-label">Pipeline Status</div>
+              <div class="proj-status-val"><span>Operational</span><span class="status-active-dot"></span></div>
+            </div>
+            <div class="proj-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 3 — PROJECT DETAIL
+══════════════════════════════════ -->
+<div class="page" id="page-project">
+  <div class="pd-layout">
+    <!-- Main content -->
+    <main class="pd-main">
+      <div class="pd-breadcrumb">
+        <a>Dashboard</a>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span style="color:var(--fg);">Cinematic Vlog 04</span>
+      </div>
+
+      <div class="pd-title-row">
+        <div>
+          <div class="pd-title">Cinematic Vlog 04</div>
+        </div>
+        <div class="pd-pills">
+          <span class="pill pill-active"><span class="pill-dot"></span>Operational</span>
+          <span class="pill" style="color:var(--fg2);border-color:var(--border2);background:var(--fg4);">Private</span>
+          <span class="pill" style="color:var(--fg2);border-color:var(--border2);background:var(--fg4);">Created Apr 23</span>
+        </div>
+      </div>
+
+      <!-- Upload type tabs -->
+      <div style="display:flex;gap:2px;padding:4px;background:rgba(0,0,0,0.03);border-radius:12px;border:1px solid var(--border);width:fit-content;margin-bottom:28px;">
+        <button class="type-tab-pd active-pd">Raw</button>
+        <button class="type-tab-pd">Draft</button>
+        <button class="type-tab-pd">Final</button>
+      </div>
+
+      <!-- Upload zone -->
+      <div style="border:2px dashed var(--border2);border-radius:18px;padding:40px;text-align:center;cursor:pointer;margin-bottom:28px;transition:all 0.25s;" onmouseover="this.style.borderColor='rgba(0,0,0,0.22)';this.style.background='rgba(0,0,0,0.008)'" onmouseout="this.style.borderColor='rgba(0,0,0,0.11)';this.style.background='transparent'">
+        <div style="width:48px;height:48px;border-radius:14px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:20px;">🛰️</div>
+        <div style="font-family:var(--serif);font-size:16px;color:var(--fg);margin-bottom:4px;">Beam Data to R2</div>
+        <div style="font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:0.2em;color:var(--fg3);font-weight:700;">Zero Egress Publication Protocol</div>
+      </div>
+
+      <!-- Files -->
+      <div class="files-header">
+        <div class="files-title">Uploaded Files</div>
+        <div class="files-count">3 files</div>
+      </div>
+      <div class="files-table">
+        <!-- Pending file -->
+        <div class="file-row">
+          <div class="file-thumb-sm">
+            <div class="play-sm"><svg width="6" height="7" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="file-thumb-dur">10:24</div>
+          </div>
+          <div class="file-info">
+            <div class="file-row-name">"I built a SaaS in 24 hours" — Final_v3.mp4</div>
+            <div class="file-row-meta">
+              <span>2.4 GB</span>
+              <span>·</span>
+              <span>@Editor_Mike</span>
+              <span>·</span>
+              <span>Uploaded 2h ago</span>
+              <span>·</span>
+              <span style="color:#b45309;font-weight:700;">NEEDS REVIEW</span>
+            </div>
+          </div>
+          <div class="file-row-actions">
+            <button class="f-btn f-btn-reject">Reject</button>
+            <button class="f-btn f-btn-approve">Approve</button>
+          </div>
+        </div>
+        <!-- Approved file -->
+        <div class="file-row">
+          <div class="file-thumb-sm" style="background:linear-gradient(135deg,#c8dcc8 0%,#a8c4a8 100%);">
+            <div class="play-sm"><svg width="6" height="7" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="file-thumb-dur">8:52</div>
+          </div>
+          <div class="file-info">
+            <div class="file-row-name">Behind the Scenes — BTS_Cut_v2.mp4</div>
+            <div class="file-row-meta">
+              <span>1.1 GB</span>
+              <span>·</span>
+              <span>@Editor_Sarah</span>
+              <span>·</span>
+              <span>Uploaded yesterday</span>
+              <span>·</span>
+              <span style="color:#16a34a;font-weight:700;">APPROVED</span>
+            </div>
+          </div>
+          <div class="file-row-actions">
+            <button class="f-btn f-btn-approved">✓ Approved</button>
+          </div>
+        </div>
+        <!-- Rejected file -->
+        <div class="file-row" style="opacity:0.55;">
+          <div class="file-thumb-sm" style="background:linear-gradient(135deg,#d8c8c8 0%,#c4a8a8 100%);">
+            <div class="play-sm"><svg width="6" height="7" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="file-thumb-dur">6:13</div>
+          </div>
+          <div class="file-info">
+            <div class="file-row-name">Intro Draft — intro_v1_rough.mp4</div>
+            <div class="file-row-meta">
+              <span>540 MB</span>
+              <span>·</span>
+              <span>@Editor_Mike</span>
+              <span>·</span>
+              <span>Apr 21</span>
+              <span>·</span>
+              <span style="color:#dc2626;font-weight:700;">REJECTED</span>
+            </div>
+          </div>
+          <div class="file-row-actions">
+            <button class="f-btn" style="color:var(--fg3);border-color:var(--border);">Rejected</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="pd-sidebar">
+      <!-- YouTube Publish -->
+      <div class="pd-panel">
+        <div class="pd-panel-title">YouTube</div>
+        <div class="yt-connected">
+          <div class="yt-dot"></div>
+          <div class="yt-label">Channel Connected</div>
+        </div>
+        <button class="yt-pub-btn">
+          <svg width="14" height="11" viewBox="0 0 16 12" fill="currentColor"><path d="M15.68 1.87A2.01 2.01 0 0 0 14.27.45C13.02.1 8 .1 8 .1S2.98.1 1.73.45A2.01 2.01 0 0 0 .32 1.87C0 3.13 0 5.7 0 5.7s0 2.57.32 3.83a2.01 2.01 0 0 0 1.41 1.42C2.98 11.3 8 11.3 8 11.3s5.02 0 6.27-.35a2.01 2.01 0 0 0 1.41-1.42C16 8.27 16 5.7 16 5.7s0-2.57-.32-3.83zM6.4 8.14V3.26l4.18 2.44-4.18 2.44z"/></svg>
+          Publish to YouTube
+        </button>
+        <p style="font-family:var(--mono);font-size:8.5px;color:var(--fg3);text-align:center;margin-top:10px;letter-spacing:0.12em;text-transform:uppercase;">1 approved file ready</p>
+      </div>
+
+      <!-- Project Info -->
+      <div class="pd-panel">
+        <div class="pd-panel-title">Project Info</div>
+        <div class="pd-panel-row">
+          <span class="pd-panel-key">Status</span>
+          <span class="pd-panel-val" style="display:flex;align-items:center;gap:5px;"><span class="status-active-dot"></span>Operational</span>
+        </div>
+        <div class="pd-panel-row">
+          <span class="pd-panel-key">Visibility</span>
+          <span class="pd-panel-val">Private</span>
+        </div>
+        <div class="pd-panel-row">
+          <span class="pd-panel-key">Created</span>
+          <span class="pd-panel-val">Apr 23, 2026</span>
+        </div>
+        <div class="pd-panel-row">
+          <span class="pd-panel-key">Total files</span>
+          <span class="pd-panel-val">3</span>
+        </div>
+        <div class="pd-panel-row">
+          <span class="pd-panel-key">Storage</span>
+          <span class="pd-panel-val">4.04 GB</span>
+        </div>
+      </div>
+
+      <!-- Editors -->
+      <div class="pd-panel">
+        <div class="pd-panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+          Editors
+          <button style="font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--fg);background:var(--fg4);border:1px solid var(--border2);border-radius:9999px;padding:3px 9px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--fg)';this.style.color='#fff'" onmouseout="this.style.background='var(--fg4)';this.style.color='var(--fg)'">+ Invite</button>
+        </div>
+        <div class="editor-item">
+          <div class="editor-avatar">EM</div>
+          <div>
+            <div class="editor-name">@Editor_Mike</div>
+            <div class="editor-role">Upload-only · Active</div>
+          </div>
+          <button class="editor-revoke">Revoke</button>
+        </div>
+        <div class="editor-item">
+          <div class="editor-avatar">ES</div>
+          <div>
+            <div class="editor-name">@Editor_Sarah</div>
+            <div class="editor-role">Upload-only · Active</div>
+          </div>
+          <button class="editor-revoke">Revoke</button>
+        </div>
+      </div>
+
+      <!-- Thumbnail -->
+      <div class="pd-panel">
+        <div class="pd-panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+          Thumbnails
+          <button style="font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--fg);background:var(--fg4);border:1px solid var(--border2);border-radius:9999px;padding:3px 9px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='var(--fg)';this.style.color='#fff'" onmouseout="this.style.background='var(--fg4)';this.style.color='var(--fg)'">+ Add</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,#ddd8d0,#c8c3ba);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;" onmouseover="this.querySelector('.thumb-overlay').style.opacity='1'" onmouseout="this.querySelector('.thumb-overlay').style.opacity='0'">
+            <div class="thumb-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);opacity:0;transition:opacity 0.18s;display:flex;align-items:center;justify-content:center;"><span style="font-family:var(--mono);font-size:7.5px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#fff;">Push</span></div>
+          </div>
+          <div style="aspect-ratio:16/9;border-radius:8px;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.18s;" onmouseover="this.style.borderColor='rgba(0,0,0,0.22)'" onmouseout="this.style.borderColor='rgba(0,0,0,0.11)'">
+            <span style="font-size:16px;color:var(--fg3);">+</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<style>
+.type-tab-pd {
+  padding: 7px 16px; border: none; background: transparent;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--fg3); cursor: pointer; border-radius: 9px; transition: all 0.15s;
+}
+.type-tab-pd.active-pd { background: white; color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+</style>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+document.querySelectorAll('.type-tab-pd').forEach(tab => {
+  tab.addEventListener('click', function() {
+    this.closest('div').querySelectorAll('.type-tab-pd').forEach(t => t.classList.remove('active-pd'));
+    this.classList.add('active-pd');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #FAF9F6;
+  --bg2: #F2F1ED;
+  --white: #ffffff;
+  --fg: #0a0a0a;
+  --fg2: rgba(0,0,0,0.42);
+  --fg3: rgba(0,0,0,0.22);
+  --fg4: rgba(0,0,0,0.06);
+  --border: rgba(0,0,0,0.06);
+  --border2: rgba(0,0,0,0.12);
+  --mono: 'SF Mono','Fira Code',monospace;
+  --serif: Georgia,'Times New Roman',serif;
+  --sans: -apple-system,BlinkMacSystemFont,sans-serif;
+}
+body { background:var(--bg); font-family:var(--sans); color:var(--fg); min-height:100vh; }
+
+/* switcher */
+.switcher {
+  position:sticky; top:0; z-index:999;
+  display:flex; align-items:center; gap:4px;
+  padding:8px 16px;
+  background:rgba(250,249,246,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.sw-label { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--fg3); margin-right:6px; }
+.sw-btn {
+  padding:5px 13px; border-radius:9999px; border:1px solid var(--border2);
+  background:transparent; font-family:var(--mono); font-size:8.5px; font-weight:700;
+  letter-spacing:0.15em; text-transform:uppercase; color:var(--fg2); cursor:pointer; transition:all 0.15s;
+}
+.sw-btn:hover { background:var(--fg4); color:var(--fg); }
+.sw-btn.on { background:var(--fg); color:#fff; border-color:transparent; }
+
+.page { display:none; }
+.page.on { display:block; }
+
+/* ══ SHARED SIDEBAR ══ */
+.layout { display:flex; min-height:calc(100vh - 37px); }
+.sidebar {
+  width:220px; flex-shrink:0; border-right:1px solid var(--border);
+  background:var(--bg); padding:24px 14px; display:flex; flex-direction:column;
+}
+.s-logo { display:flex; align-items:center; gap:8px; padding:0 6px; margin-bottom:28px; }
+.s-logo-mark { width:26px; height:26px; border-radius:8px; background:var(--fg); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.s-logo-name { font-size:13px; font-weight:500; letter-spacing:-0.02em; color:var(--fg); }
+.s-section { font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:var(--fg3); padding:0 8px; margin:18px 0 6px; }
+.s-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; border-radius:10px; cursor:pointer; width:100%;
+  font-size:12px; color:var(--fg2); transition:all 0.15s; border:none;
+  background:transparent; text-align:left; margin-bottom:1px;
+}
+.s-item:hover { background:var(--fg4); color:var(--fg); }
+.s-item.on { background:rgba(0,0,0,0.05); color:var(--fg); font-weight:500; }
+.s-item-l { display:flex; align-items:center; gap:8px; }
+.s-badge { background:var(--fg); color:#fff; font-family:var(--mono); font-size:7.5px; font-weight:700; padding:2px 5px; border-radius:4px; }
+.s-user { margin-top:auto; padding-top:20px; border-top:1px solid var(--border); display:flex; align-items:center; gap:9px; padding:16px 8px 0; }
+.s-avatar { width:30px; height:30px; border-radius:50%; background:var(--fg); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:10px; font-weight:700; color:#fff; flex-shrink:0; }
+.s-uname { font-size:11px; font-weight:600; color:var(--fg); }
+.s-urole { font-family:var(--mono); font-size:8.5px; color:var(--fg3); margin-top:1px; }
+
+/* ══ MAIN AREA ══ */
+.main { flex:1; min-width:0; padding:36px 40px; background:var(--bg); }
+.main-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:36px; }
+.main-title { font-family:var(--serif); font-size:34px; font-style:italic; font-weight:400; letter-spacing:-0.02em; margin-bottom:4px; }
+.main-sub { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg3); }
+.btn-black {
+  display:flex; align-items:center; gap:8px;
+  padding:11px 20px; background:var(--fg); color:#fff;
+  border:none; border-radius:9999px; cursor:pointer;
+  font-family:var(--mono); font-size:8.5px; font-weight:700;
+  letter-spacing:0.2em; text-transform:uppercase; transition:all 0.18s;
+  white-space:nowrap;
+}
+.btn-black:hover { background:#222; transform:scale(1.02); }
+.btn-black svg { transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+.btn-black:hover svg { transform:rotate(90deg); }
+
+/* stats */
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:32px; }
+.stat {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:16px; padding:20px;
+}
+.stat-lbl { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--fg3); margin-bottom:8px; }
+.stat-val { font-family:var(--serif); font-size:30px; font-weight:400; letter-spacing:-0.02em; color:var(--fg); line-height:1; }
+.stat-delta { font-family:var(--mono); font-size:8.5px; color:var(--fg3); margin-top:5px; }
+.stat-delta.up { color:#16a34a; }
+
+/* project list */
+.list-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.list-hdr-title { font-size:12px; font-weight:600; color:var(--fg); }
+.list-hdr-count { font-family:var(--mono); font-size:9px; color:var(--fg3); }
+.proj-list { background:var(--white); border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+.proj-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 26px; border-bottom:1px solid var(--border);
+  transition:background 0.15s; cursor:pointer; position:relative; overflow:hidden;
+}
+.proj-row:last-child { border-bottom:none; }
+.proj-row::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%) scaleY(0);
+  width:3px; height:34px; border-radius:0 3px 3px 0; background:var(--fg);
+  transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.proj-row:hover::before { transform:translateY(-50%) scaleY(1); }
+.proj-row:hover { background:rgba(0,0,0,0.008); }
+.proj-left { display:flex; align-items:center; gap:16px; }
+.proj-av {
+  width:46px; height:46px; border-radius:14px;
+  background:var(--fg4); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:20px; color:var(--fg3);
+  transition:all 0.25s; flex-shrink:0;
+}
+.proj-row:hover .proj-av { color:var(--fg); border-color:var(--border2); transform:scale(1.06) rotate(2deg); }
+.proj-name { font-family:var(--serif); font-size:19px; font-weight:700; letter-spacing:-0.01em; color:rgba(0,0,0,0.78); margin-bottom:4px; transition:color 0.15s; }
+.proj-row:hover .proj-name { color:var(--fg); }
+.proj-tags { display:flex; align-items:center; gap:10px; }
+.proj-tag { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg3); display:flex; align-items:center; gap:4px; }
+.proj-right { display:flex; align-items:center; gap:18px; }
+.proj-status-wrap { text-align:right; }
+.proj-status-lbl { font-family:var(--mono); font-size:8px; text-transform:uppercase; letter-spacing:0.22em; color:var(--fg3); margin-bottom:4px; font-weight:700; }
+.proj-status-val { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; display:flex; align-items:center; gap:5px; justify-content:flex-end; }
+.active-dot { width:5px; height:5px; border-radius:50%; background:var(--fg); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.chevron-wrap {
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
+  color:var(--fg3); transition:all 0.18s;
+}
+.proj-row:hover .chevron-wrap { border-color:var(--border2); color:var(--fg); transform:translateX(2px); }
+
+/* ══ PROJECT DETAIL ══ */
+.pd-main { flex:1; min-width:0; padding:36px 40px; }
+.breadcrumb { display:flex; align-items:center; gap:7px; margin-bottom:28px; font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--fg3); }
+.breadcrumb span { color:var(--fg); }
+.pd-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.pd-title { font-family:var(--serif); font-size:38px; font-style:italic; font-weight:400; letter-spacing:-0.02em; }
+.pills { display:flex; align-items:center; gap:6px; }
+.pill {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:9999px; border:1px solid;
+  font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+}
+.pill-on { color:var(--fg); border-color:rgba(0,0,0,0.14); background:rgba(0,0,0,0.04); }
+.pill-on .pdot { width:4px;height:4px;border-radius:50%;background:var(--fg);animation:blink 2s infinite; }
+.pill-muted { color:var(--fg2); border-color:var(--border2); background:var(--fg4); }
+
+/* type tabs */
+.type-tabs { display:flex; gap:2px; padding:3px; background:rgba(0,0,0,0.03); border-radius:11px; border:1px solid var(--border); width:fit-content; margin-bottom:20px; }
+.ttab { padding:6px 14px; border:none; background:transparent; font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--fg3); cursor:pointer; border-radius:9px; transition:all 0.15s; }
+.ttab.on { background:white; color:var(--fg); box-shadow:0 1px 4px rgba(0,0,0,0.07); }
+
+/* upload zone */
+.upload-zone {
+  border:2px dashed var(--border2); border-radius:18px;
+  padding:38px; text-align:center; cursor:pointer; margin-bottom:24px;
+  transition:all 0.22s;
+}
+.upload-zone:hover { border-color:rgba(0,0,0,0.22); background:rgba(0,0,0,0.007); }
+.uz-icon { width:46px;height:46px;border-radius:13px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:18px;transition:all 0.22s; }
+.upload-zone:hover .uz-icon { transform:translateY(-2px); }
+.uz-title { font-family:var(--serif); font-size:15px; color:var(--fg); margin-bottom:3px; }
+.uz-sub { font-family:var(--mono); font-size:8.5px; text-transform:uppercase; letter-spacing:0.2em; color:var(--fg3); font-weight:700; }
+
+/* files table */
+.files-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.files-hdr-title { font-size:12px; font-weight:600; color:var(--fg); }
+.files-hdr-count { font-family:var(--mono); font-size:9px; color:var(--fg3); }
+.files-table { background:var(--white); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.f-row {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px; border-bottom:1px solid var(--border);
+  transition:background 0.14s; cursor:pointer;
+}
+.f-row:last-child { border-bottom:none; }
+.f-row:hover { background:rgba(0,0,0,0.007); }
+.f-thumb { width:76px; height:43px; border-radius:8px; flex-shrink:0; position:relative; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#ddd8d0,#c8c3ba); }
+.f-play { width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,0.78);display:flex;align-items:center;justify-content:center; }
+.f-dur { position:absolute;bottom:3px;right:4px;font-family:var(--mono);font-size:7px;color:rgba(255,255,255,0.65); }
+.f-info { flex:1; min-width:0; }
+.f-name { font-size:12px; font-weight:600; color:var(--fg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+.f-meta { font-family:var(--mono); font-size:8.5px; color:var(--fg3); display:flex; gap:8px; }
+.f-actions { display:flex; gap:6px; flex-shrink:0; }
+.f-btn {
+  padding:6px 12px; border-radius:8px; cursor:pointer;
+  font-family:var(--mono); font-size:8px; font-weight:700;
+  letter-spacing:0.16em; text-transform:uppercase; transition:all 0.14s; border:1px solid;
+}
+.f-reject { color:#dc2626; border-color:rgba(220,38,38,0.22); background:transparent; }
+.f-reject:hover { background:rgba(220,38,38,0.06); }
+.f-approve { color:#16a34a; border-color:rgba(22,163,74,0.22); background:transparent; }
+.f-approve:hover { background:rgba(22,163,74,0.06); }
+.f-done { color:#16a34a; border-color:rgba(22,163,74,0.18); background:rgba(22,163,74,0.05); }
+.f-rejected-lbl { color:var(--fg3); border-color:var(--border); background:transparent; }
+
+/* right panel */
+.pd-panel-col { width:268px; flex-shrink:0; border-left:1px solid var(--border); padding:36px 24px; background:var(--bg); }
+.panel { margin-bottom:30px; }
+.panel-title {
+  font-family:var(--mono); font-size:8.5px; font-weight:700;
+  letter-spacing:0.24em; text-transform:uppercase; color:var(--fg3);
+  margin-bottom:14px; padding-bottom:9px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.panel-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
+.panel-key { font-size:11px; color:var(--fg2); }
+.panel-val { font-family:var(--mono); font-size:9.5px; color:var(--fg); font-weight:700; letter-spacing:0.04em; }
+.yt-status { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
+.yt-dot { width:5px;height:5px;border-radius:50%;background:#16a34a;animation:blink 2s infinite; }
+.yt-lbl { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#16a34a; }
+.yt-btn {
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  width:100%; padding:13px; background:rgba(220,38,38,0.07); border:1px solid rgba(220,38,38,0.18);
+  border-radius:11px; color:#dc2626; cursor:pointer;
+  font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; transition:all 0.16s;
+}
+.yt-btn:hover { background:rgba(220,38,38,0.12); transform:scale(1.02); }
+.ed-item { display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--border); }
+.ed-item:last-child { border-bottom:none; }
+.ed-av { width:26px;height:26px;border-radius:50%;background:var(--fg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8.5px;font-weight:700;color:var(--fg2);flex-shrink:0; }
+.ed-name { font-size:11px; font-weight:500; color:var(--fg); }
+.ed-role { font-family:var(--mono); font-size:8px; color:var(--fg3); }
+.ed-revoke { margin-left:auto; font-family:var(--mono); font-size:8px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--fg3); cursor:pointer; border:none; background:transparent; transition:color 0.14s; }
+.ed-revoke:hover { color:#dc2626; }
+.mini-btn { font-family:var(--mono); font-size:7.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg); background:var(--fg4); border:1px solid var(--border2); border-radius:9999px; padding:3px 8px; cursor:pointer; transition:all 0.14s; }
+.mini-btn:hover { background:var(--fg); color:#fff; }
+.thumb-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.thumb-tile { aspect-ratio:16/9; border-radius:7px; border:1px solid var(--border); position:relative; overflow:hidden; cursor:pointer; }
+.thumb-tile-bg { width:100%;height:100%;background:linear-gradient(135deg,#ddd8d0,#c8c3ba); }
+.thumb-overlay { position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.16s; }
+.thumb-tile:hover .thumb-overlay { background:rgba(0,0,0,0.48); }
+.thumb-overlay-lbl { font-family:var(--mono);font-size:7px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#fff;opacity:0;transition:opacity 0.16s; }
+.thumb-tile:hover .thumb-overlay-lbl { opacity:1; }
+.thumb-add { aspect-ratio:16/9; border-radius:7px; border:2px dashed var(--border2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:border-color 0.14s; }
+.thumb-add:hover { border-color:rgba(0,0,0,0.22); }
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <span class="sw-label">Page —</span>
+  <button class="sw-btn on" onclick="go('dash',this)">Dashboard</button>
+  <button class="sw-btn" onclick="go('project',this)">Project Detail</button>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div class="page on" id="p-dash">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="s-logo">
+        <div class="s-logo-mark">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="s-logo-name">ClipFlow</span>
+      </div>
+      <div class="s-section">Workspace</div>
+      <button class="s-item on">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>All Projects</span>
+        <span class="s-badge">3</span>
+      </button>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Pending Review</span>
+        <span class="s-badge">2</span>
+      </button>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Published</span>
+      </button>
+      <div class="s-section">Team</div>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Editors</span>
+        <span class="s-badge">4</span>
+      </button>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Audit Log</span>
+      </button>
+      <div class="s-section">Account</div>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>Settings</span>
+      </button>
+      <div class="s-user">
+        <div class="s-avatar">MK</div>
+        <div>
+          <div class="s-uname">Main Channel</div>
+          <div class="s-urole">2.1M subscribers</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Pipelines</div>
+          <div class="main-sub">3 active projects · Last sync 4m ago</div>
+        </div>
+        <button class="btn-black">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Project
+        </button>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-lbl">Pending Review</div>
+          <div class="stat-val">2</div>
+          <div class="stat-delta">files awaiting approval</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Published This Month</div>
+          <div class="stat-val">14</div>
+          <div class="stat-delta up">↑ 3 vs last month</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Active Editors</div>
+          <div class="stat-val">4</div>
+          <div class="stat-delta">across all projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">Storage Used</div>
+          <div class="stat-val">48<span style="font-size:18px;letter-spacing:0;">GB</span></div>
+          <div class="stat-delta">of 500 GB on R2</div>
+        </div>
+      </div>
+
+      <div class="list-hdr">
+        <div class="list-hdr-title">All Projects</div>
+        <div class="list-hdr-count">3 total</div>
+      </div>
+      <div class="proj-list">
+        <div class="proj-row">
+          <div class="proj-left">
+            <div class="proj-av">C</div>
+            <div>
+              <div class="proj-name">Cinematic Vlog 04</div>
+              <div class="proj-tags">
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Apr 23, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.14);display:inline-block;"></span>
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Private</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.14);display:inline-block;"></span>
+                <span class="proj-tag" style="color:#b45309;">2 pending</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-lbl">Pipeline Status</div>
+              <div class="proj-status-val"><span>Operational</span><span class="active-dot"></span></div>
+            </div>
+            <div class="chevron-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-left">
+            <div class="proj-av">G</div>
+            <div>
+              <div class="proj-name">Gear Review Vol. 2</div>
+              <div class="proj-tags">
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Apr 18, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.14);display:inline-block;"></span>
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Private</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-lbl">Pipeline Status</div>
+              <div class="proj-status-val"><span>Operational</span><span class="active-dot"></span></div>
+            </div>
+            <div class="chevron-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+        <div class="proj-row" style="opacity:0.5;">
+          <div class="proj-left">
+            <div class="proj-av">T</div>
+            <div>
+              <div class="proj-name">Travel Diary EP 7</div>
+              <div class="proj-tags">
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Mar 10, 2026</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.14);display:inline-block;"></span>
+                <span class="proj-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Public</span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-right">
+            <div class="proj-status-wrap">
+              <div class="proj-status-lbl">Pipeline Status</div>
+              <div class="proj-status-val" style="color:var(--fg3);">Archived</div>
+            </div>
+            <div class="chevron-wrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ PROJECT DETAIL ══════════════ -->
+<div class="page" id="p-project">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="s-logo">
+        <div class="s-logo-mark">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="s-logo-name">ClipFlow</span>
+      </div>
+      <div class="s-section">Workspace</div>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>All Projects</span>
+        <span class="s-badge">3</span>
+      </button>
+      <button class="s-item on">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Pending Review</span>
+        <span class="s-badge">2</span>
+      </button>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Published</span>
+      </button>
+      <div class="s-section">Team</div>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Editors</span>
+        <span class="s-badge">4</span>
+      </button>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Audit Log</span>
+      </button>
+      <div class="s-section">Account</div>
+      <button class="s-item">
+        <span class="s-item-l"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>Settings</span>
+      </button>
+      <div class="s-user">
+        <div class="s-avatar">MK</div>
+        <div>
+          <div class="s-uname">Main Channel</div>
+          <div class="s-urole">2.1M subscribers</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="pd-main">
+      <div class="breadcrumb">
+        <a style="cursor:pointer;text-decoration:none;color:inherit;" onclick="go('dash',document.querySelectorAll('.sw-btn')[0])">Dashboard</a>
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span>Cinematic Vlog 04</span>
+      </div>
+
+      <div class="pd-title-row">
+        <div class="pd-title">Cinematic Vlog 04</div>
+        <div class="pills">
+          <span class="pill pill-on"><span class="pdot"></span>Operational</span>
+          <span class="pill pill-muted">Private</span>
+          <span class="pill pill-muted">Apr 23, 2026</span>
+        </div>
+      </div>
+
+      <!-- type tabs + upload -->
+      <div class="type-tabs" style="margin-top:20px;">
+        <button class="ttab on">Raw</button>
+        <button class="ttab">Draft</button>
+        <button class="ttab">Final</button>
+      </div>
+
+      <div class="upload-zone">
+        <div class="uz-icon">🛰️</div>
+        <div class="uz-title">Beam Data to R2</div>
+        <div class="uz-sub">Zero Egress Publication Protocol</div>
+      </div>
+
+      <!-- Files -->
+      <div class="files-hdr">
+        <div class="files-hdr-title">Uploaded Files</div>
+        <div class="files-hdr-count">3 files · 4.04 GB</div>
+      </div>
+      <div class="files-table">
+        <!-- needs review -->
+        <div class="f-row">
+          <div class="f-thumb">
+            <div class="f-play"><svg width="5" height="6" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="f-dur">10:24</div>
+          </div>
+          <div class="f-info">
+            <div class="f-name">"I built a SaaS in 24 hours" — Final_v3.mp4</div>
+            <div class="f-meta">
+              <span>2.4 GB</span><span>·</span><span>@Editor_Mike</span><span>·</span><span>2h ago</span><span>·</span>
+              <span style="color:#b45309;font-weight:700;">NEEDS REVIEW</span>
+            </div>
+          </div>
+          <div class="f-actions">
+            <button class="f-btn f-reject">Reject</button>
+            <button class="f-btn f-approve">Approve</button>
+          </div>
+        </div>
+        <!-- approved -->
+        <div class="f-row">
+          <div class="f-thumb" style="background:linear-gradient(135deg,#c8dcc8,#a8c4a8);">
+            <div class="f-play"><svg width="5" height="6" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="f-dur">8:52</div>
+          </div>
+          <div class="f-info">
+            <div class="f-name">Behind the Scenes — BTS_Cut_v2.mp4</div>
+            <div class="f-meta">
+              <span>1.1 GB</span><span>·</span><span>@Editor_Sarah</span><span>·</span><span>Yesterday</span><span>·</span>
+              <span style="color:#16a34a;font-weight:700;">APPROVED</span>
+            </div>
+          </div>
+          <div class="f-actions">
+            <button class="f-btn f-done">✓ Approved</button>
+          </div>
+        </div>
+        <!-- rejected -->
+        <div class="f-row" style="opacity:0.48;">
+          <div class="f-thumb" style="background:linear-gradient(135deg,#d8c8c8,#c4a8a8);">
+            <div class="f-play"><svg width="5" height="6" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg></div>
+            <div class="f-dur">6:13</div>
+          </div>
+          <div class="f-info">
+            <div class="f-name">Intro Draft — intro_v1_rough.mp4</div>
+            <div class="f-meta">
+              <span>540 MB</span><span>·</span><span>@Editor_Mike</span><span>·</span><span>Apr 21</span><span>·</span>
+              <span style="color:#dc2626;font-weight:700;">REJECTED</span>
+            </div>
+          </div>
+          <div class="f-actions">
+            <button class="f-btn f-rejected-lbl">Rejected</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Right panel -->
+    <div class="pd-panel-col">
+      <!-- YouTube -->
+      <div class="panel">
+        <div class="panel-title">YouTube</div>
+        <div class="yt-status">
+          <div class="yt-dot"></div>
+          <div class="yt-lbl">Channel Connected</div>
+        </div>
+        <button class="yt-btn">
+          <svg width="13" height="10" viewBox="0 0 16 12" fill="currentColor"><path d="M15.68 1.87A2.01 2.01 0 0 0 14.27.45C13.02.1 8 .1 8 .1S2.98.1 1.73.45A2.01 2.01 0 0 0 .32 1.87C0 3.13 0 5.7 0 5.7s0 2.57.32 3.83a2.01 2.01 0 0 0 1.41 1.42C2.98 11.3 8 11.3 8 11.3s5.02 0 6.27-.35a2.01 2.01 0 0 0 1.41-1.42C16 8.27 16 5.7 16 5.7s0-2.57-.32-3.83zM6.4 8.14V3.26l4.18 2.44-4.18 2.44z"/></svg>
+          Publish to YouTube
+        </button>
+        <p style="font-family:var(--mono);font-size:8px;color:var(--fg3);text-align:center;margin-top:9px;letter-spacing:0.12em;text-transform:uppercase;">1 approved file ready</p>
+      </div>
+
+      <!-- Project Info -->
+      <div class="panel">
+        <div class="panel-title">Project Info</div>
+        <div class="panel-row">
+          <span class="panel-key">Status</span>
+          <span class="panel-val" style="display:flex;align-items:center;gap:5px;"><span class="active-dot"></span>Operational</span>
+        </div>
+        <div class="panel-row"><span class="panel-key">Visibility</span><span class="panel-val">Private</span></div>
+        <div class="panel-row"><span class="panel-key">Created</span><span class="panel-val">Apr 23, 2026</span></div>
+        <div class="panel-row"><span class="panel-key">Files</span><span class="panel-val">3 total</span></div>
+        <div class="panel-row"><span class="panel-key">Storage</span><span class="panel-val">4.04 GB</span></div>
+      </div>
+
+      <!-- Editors -->
+      <div class="panel">
+        <div class="panel-title">
+          Editors
+          <button class="mini-btn">+ Invite</button>
+        </div>
+        <div class="ed-item">
+          <div class="ed-av">EM</div>
+          <div><div class="ed-name">@Editor_Mike</div><div class="ed-role">Upload-only · Active</div></div>
+          <button class="ed-revoke">Revoke</button>
+        </div>
+        <div class="ed-item">
+          <div class="ed-av">ES</div>
+          <div><div class="ed-name">@Editor_Sarah</div><div class="ed-role">Upload-only · Active</div></div>
+          <button class="ed-revoke">Revoke</button>
+        </div>
+      </div>
+
+      <!-- Thumbnails -->
+      <div class="panel">
+        <div class="panel-title">
+          Thumbnails
+          <button class="mini-btn">+ Add</button>
+        </div>
+        <div class="thumb-grid">
+          <div class="thumb-tile">
+            <div class="thumb-tile-bg"></div>
+            <div class="thumb-overlay"><span class="thumb-overlay-lbl">Push to YT</span></div>
+          </div>
+          <div class="thumb-add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('p-' + id).classList.add('on');
+  btn.classList.add('on');
+}
+document.querySelectorAll('.ttab').forEach(t => {
+  t.addEventListener('click', function() {
+    this.closest('.type-tabs').querySelectorAll('.ttab').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>
