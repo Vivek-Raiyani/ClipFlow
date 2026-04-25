@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { projects, users } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     const [newProject] = await db.insert(projects).values({
       title,
       creatorId: user.id,
+      channelId: user.activeChannelId, // Link to the currently active channel
       visibility: "unlisted",
       status: "active",
     }).returning();
@@ -43,7 +44,14 @@ export async function GET() {
 
     if (!user) return NextResponse.json([]);
 
-    const userProjects = await db.select().from(projects).where(eq(projects.creatorId, user.id));
+    const userProjects = await db.select().from(projects).where(
+      and(
+        eq(projects.creatorId, user.id),
+        user.activeChannelId 
+          ? eq(projects.channelId, user.activeChannelId) 
+          : isNull(projects.channelId)
+      )
+    );
 
     return NextResponse.json(userProjects);
   } catch (error) {

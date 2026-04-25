@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { projects, projectFiles, creatorEditorRelationships, users } from "@/lib/db/schema";
-import { eq, count } from "drizzle-orm";
+import { eq, count, and, isNull } from "drizzle-orm";
 import { syncUser } from "@/lib/user-sync";
 import { DashboardLayout } from "@/app/components/DashboardLayout";
 import { ProjectCard } from "@/app/components/ProjectCard";
@@ -19,7 +19,14 @@ export default async function DashboardPage() {
   if (!user) redirect("/sign-in");
 
   const [allProjects, pendingFiles, editors] = await Promise.all([
-    db.select().from(projects).where(eq(projects.creatorId, user.id)),
+    db.select().from(projects).where(
+      and(
+        eq(projects.creatorId, user.id),
+        user.activeChannelId 
+          ? eq(projects.channelId, user.activeChannelId) 
+          : isNull(projects.channelId)
+      )
+    ),
     db.select({ count: count() }).from(projectFiles).where(eq(projectFiles.status, "pending")),
     db.select({ count: count() }).from(creatorEditorRelationships).where(
       eq(creatorEditorRelationships.creatorId, user.id)

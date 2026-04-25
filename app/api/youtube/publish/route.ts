@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { projects, projectFiles, users, auditLogs } from "@/lib/db/schema";
+import { projects, projectFiles, users, auditLogs, youtubeChannels } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { refreshAccessToken } from "@/lib/youtube";
@@ -23,9 +23,6 @@ export async function POST(req: Request) {
       where: eq(users.clerkId, clerkId),
     });
     if (!user) return NextResponse.json({ error: "User not synced" }, { status: 404 });
-    if (!user.youtubeRefreshToken) {
-      return NextResponse.json({ error: "YouTube account not connected" }, { status: 400 });
-    }
 
     // 2. Resolve Project
     const project = await db.query.projects.findFirst({
@@ -36,7 +33,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3. Resolve Selected File
+    // 3. Resolve Channel
+    const channelId = project.channelId || user.activeChannelId;
+    if (!channelId) {
+      return NextResponse.json({ error: "No YouTube channel associated with this project" }, { status: 400 });
+    }
+
+    const channel = await db.query.youtubeChannels.findFirst({
+      where: eq(youtubeChannels.id, channelId),
+    });
+
+    if (!channel) {
+      return NextResponse.json({ error: "Associated YouTube channel not found" }, { status: 404 });
+    }
+
+    // 4. Resolve Selected File
     const file = await db.query.projectFiles.findFirst({
       where: and(
         eq(projectFiles.id, fileId),
@@ -51,16 +62,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Only approved files can be published" }, { status: 400 });
     }
 
-    // 4. Refresh YouTube Access Token
-    const newAccessToken = await refreshAccessToken(user.youtubeRefreshToken);
-    await db.update(users)
-      .set({ youtubeAccessToken: newAccessToken })
-      .where(eq(users.id, user.id));
+    // 5. Refresh YouTube Access Token
+    const newAccessToken = await refreshAccessToken(channel.refreshToken);
+    await db.update(youtubeChannels)
+      .set({ accessToken: newAccessToken, updatedAt: new Date() })
+      .where(eq(youtubeChannels.id, channel.id));
 
-    // 5. Publish to YouTube
+    // 6. Publish to YouTube
     const ytResponse = await publishToYouTube({
       accessToken: newAccessToken,
-      refreshToken: user.youtubeRefreshToken,
+      refreshToken: channel.refreshToken,
       r2Key: file.r2Key,
       title: project.title,
       description: project.description || "",

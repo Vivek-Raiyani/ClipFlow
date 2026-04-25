@@ -43,3 +43,20 @@ export const refreshAccessToken = async (refreshToken: string) => {
   const { credentials } = await auth.refreshAccessToken();
   return credentials.access_token!;
 };
+
+export const getChannelInfo = async (accessToken: string) => {
+  const youtube = getYoutubeClient(accessToken);
+  const response = await youtube.channels.list({
+    part: ["snippet", "id"],
+    mine: true,
+  });
+
+  const channel = response.data.items?.[0];
+  if (!channel) return null;
+
+  return {
+    id: channel.id!,
+    title: channel.snippet?.title!,
+    thumbnail: channel.snippet?.thumbnails?.default?.url!,
+  };
+};

@@ -1,7 +1,7 @@
-import { OAuth2Client } from "@/lib/youtube";
+import { OAuth2Client, getChannelInfo } from "@/lib/youtube";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { users, youtubeChannels } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -20,14 +20,50 @@ export async function GET(request: Request) {
     }
 
     const { tokens } = await OAuth2Client.getToken(code);
+    if (!tokens.access_token) {
+        throw new Error("Failed to get access token");
+    }
+
+    const channelInfo = await getChannelInfo(tokens.access_token);
+    if (!channelInfo) {
+        throw new Error("Failed to get channel info");
+    }
     
-    // Update tokens in DB
-    await db.update(users)
-      .set({
-        youtubeAccessToken: tokens.access_token,
-        youtubeRefreshToken: tokens.refresh_token,
+    // Get the internal user ID
+    const dbUser = await db.query.users.findFirst({
+        where: eq(users.clerkId, clerkId)
+    });
+
+    if (!dbUser) {
+        throw new Error("User not found in database");
+    }
+
+    // Upsert the channel
+    const [channel] = await db.insert(youtubeChannels)
+      .values({
+        userId: dbUser.id,
+        youtubeChannelId: channelInfo.id,
+        channelTitle: channelInfo.title,
+        channelThumbnail: channelInfo.thumbnail,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token!,
       })
-      .where(eq(users.clerkId, clerkId));
+      .onConflictDoUpdate({
+        target: youtubeChannels.youtubeChannelId,
+        set: {
+          channelTitle: channelInfo.title,
+          channelThumbnail: channelInfo.thumbnail,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token!,
+          updatedAt: new Date(),
+        }
+      })
+      .returning();
+
+    // Set as active channel
+    await db.update(users)
+      .set({ activeChannelId: channel.id })
+      .where(eq(users.id, dbUser.id));
 
     return NextResponse.redirect(new URL("/dashboard?success=youtube_connected", request.url));
   } catch (error) {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { BrandIcon } from "@/app/components/BrandIcon";
+import { ChannelSwitcher } from "./ChannelSwitcher";
 import {
   LayoutGrid,
   Clock,
@@ -62,6 +63,8 @@ export function DashboardSidebar({ counts = {} }: SidebarProps) {
           <span className="dash-logo-name">ClipFlow</span>
         </div>
       </Link>
+
+      <ChannelSwitcher />
 
       {/* Nav sections */}
       {navSections.map((section) => (

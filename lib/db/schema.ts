@@ -12,11 +12,20 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   name: text("name"),
   role: userRoleEnum("role").default("editor").notNull(),
-  youtubeAccessToken: text("youtube_access_token"),
-  youtubeRefreshToken: text("youtube_refresh_token"),
-  driveAccessToken: text("drive_access_token"),
-  driveRefreshToken: text("drive_refresh_token"),
+  activeChannelId: uuid("active_channel_id"), // Will reference youtube_channels.id later
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const youtubeChannels = pgTable("youtube_channels", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  youtubeChannelId: text("youtube_channel_id").notNull().unique(),
+  channelTitle: text("channel_title").notNull(),
+  channelThumbnail: text("channel_thumbnail"),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
 });
 
 // Relationship table to link editors to creators
@@ -46,6 +55,7 @@ export const projects = pgTable("projects", {
   visibility: visibilityEnum("visibility").default("unlisted").notNull(),
   status: projectStatusEnum("status").default("active").notNull(),
   creatorId: uuid("creator_id").references(() => users.id).notNull(),
+  channelId: uuid("channel_id").references(() => youtubeChannels.id), // Link to specific channel
   youtubeVideoId: text("youtube_video_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
