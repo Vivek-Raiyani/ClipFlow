@@ -41,7 +41,7 @@ export default async function TeamPage() {
   ]);
 
   return (
-    <DashboardLayout counts={{ editors: editors.length }}>
+    <DashboardLayout>
       <TeamClient
         editors={editors.map(e => ({
           id: e.id,
