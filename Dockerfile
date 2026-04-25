@@ -31,6 +31,9 @@ ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=$NEXT_PUBLIC_CLERK_SIGN_IN_URL
 ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=$NEXT_PUBLIC_CLERK_SIGN_UP_URL
 ENV DATABASE_URL=$DATABASE_URL
 
+# Increase Node.js heap size for the TypeScript checker + build
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
 # Run the build
 RUN npm run build
 
