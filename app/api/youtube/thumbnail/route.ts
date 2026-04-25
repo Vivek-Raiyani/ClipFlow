@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { thumbnails, projects, users, auditLogs } from "@/lib/db/schema";
+import { thumbnails, projects, users, youtubeChannels, auditLogs } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { refreshAccessToken } from "@/lib/youtube";
+import { encrypt } from "@/lib/crypto";
 import { r2, R2_BUCKET_NAME } from "@/lib/r2";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -26,9 +27,6 @@ export async function POST(req: Request) {
     // ── Resolve the user ──────────────────────────────────────────────────────
     const user = await db.query.users.findFirst({ where: eq(users.clerkId, clerkId) });
     if (!user) return NextResponse.json({ error: "User not synced" }, { status: 404 });
-    if (!user.youtubeRefreshToken) {
-      return NextResponse.json({ error: "YouTube account not connected" }, { status: 400 });
-    }
 
     // ── Resolve the project ───────────────────────────────────────────────────
     const project = await db.query.projects.findFirst({ where: eq(projects.id, projectId) });
@@ -43,6 +41,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // ── Resolve the channel ───────────────────────────────────────────────────
+    const channelId = project.channelId || user.activeChannelId;
+    if (!channelId) {
+      return NextResponse.json({ error: "YouTube account not connected" }, { status: 400 });
+    }
+
+    const channel = await db.query.youtubeChannels.findFirst({
+      where: eq(youtubeChannels.id, channelId),
+    });
+
+    if (!channel || !channel.refreshToken) {
+      return NextResponse.json({ error: "YouTube channel disconnected" }, { status: 400 });
+    }
+
     // ── Resolve the thumbnail ─────────────────────────────────────────────────
     const thumbnail = await db.query.thumbnails.findFirst({
       where: and(eq(thumbnails.id, thumbnailId), eq(thumbnails.projectId, projectId)),
@@ -50,8 +62,11 @@ export async function POST(req: Request) {
     if (!thumbnail) return NextResponse.json({ error: "Thumbnail not found" }, { status: 404 });
 
     // ── Refresh access token ──────────────────────────────────────────────────
-    const accessToken = await refreshAccessToken(user.youtubeRefreshToken);
-    await db.update(users).set({ youtubeAccessToken: accessToken }).where(eq(users.id, user.id));
+    const accessToken = await refreshAccessToken(channel.refreshToken);
+    const encryptedAccessToken = encrypt(accessToken);
+    await db.update(youtubeChannels)
+      .set({ accessToken: encryptedAccessToken, updatedAt: new Date() })
+      .where(eq(youtubeChannels.id, channel.id));
 
     // ── Fetch thumbnail from R2 ───────────────────────────────────────────────
     const getCmd = new GetObjectCommand({ Bucket: R2_BUCKET_NAME!, Key: thumbnail.r2Key });

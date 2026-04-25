@@ -7,7 +7,7 @@ ClipFlow serves as a collaborative hub for video creators and editors to manage,
 3. **Team Building**: Creators invite editors. Editors are linked securely to the creator under a `creatorEditorRelationships` structure.
 4. **Project Creation & Asset Ingestion**: The Creator creates a Project. Files are ingested either by Direct Upload (Editor side) or Drive Import (Creator side).
 5. **Approval Workflow**: Files are versioned in `projectFiles` and tracked in `auditLogs`. Once a file is approved by the Creator, its status changes to `approved`.
-6. **Publishing**: The Creator clicks publish. The backend fetches the approved file from Cloudflare R2 and publishes it directly to YouTube using the stored `youtubeRefreshToken`, mapping the project tags and description.
+6. **Publishing**: The Creator clicks publish. The backend fetches the approved file from Cloudflare R2 and publishes it directly to YouTube using the stored `refreshToken` from the `youtubeChannels` table, mapping the project tags and description.
 
 ## 2. Component Implementations
 

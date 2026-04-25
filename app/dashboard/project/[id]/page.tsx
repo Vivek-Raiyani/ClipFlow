@@ -63,14 +63,10 @@ export default async function ProjectDetailPage({
     db.select().from(thumbnails).where(eq(thumbnails.projectId, id)),
   ]);
 
-  const isYouTubeConnected = Boolean(user.youtubeRefreshToken);
-
-  const counts = {
-    pending: files.filter(f => f.status === "pending").length,
-  };
+  const isYouTubeConnected = Boolean(user.activeChannelId);
 
   return (
-    <DashboardLayout counts={counts}>
+    <DashboardLayout>
       <ProjectDetailClient
         project={{
           id: project.id,

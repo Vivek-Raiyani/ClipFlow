@@ -33,7 +33,7 @@ Before you begin testing in the browser, ensure these backend prerequisites are 
 4. Locate the **"Connect Drive"** button.
 5. Click it. Google will ask for full Google Drive permissions. Approve it.
 6. You should be redirected back to the Dashboard. The "Connect Drive" button should disappear.
-   * **Success Metric:** Check your Neon database `users` table. `youtubeAccessToken`, `youtubeRefreshToken`, `driveAccessToken`, and `driveRefreshToken` should now be populated.
+   * **Success Metric:** Check your Neon database. `youtube_channels` and `google_drive_connections` tables should now have rows with populated tokens linked to your user ID.
 
 ---
 
