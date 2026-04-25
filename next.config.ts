@@ -13,8 +13,10 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   experimental: {
     turbopackFileSystemCacheForDev: true,
+    serverActions: {
+      allowedOrigins: ['unseemly-squatter-carrousel.ngrok-free.dev', 'localhost:3000', '192.168.137.1:3000'],
+    },
   },
-  allowedDevOrigins: ['unseemly-squatter-carrousel.ngrok-free.dev', 'localhost:3000'],
 };
 
 export default nextConfig;
