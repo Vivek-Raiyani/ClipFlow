@@ -1,294 +1,79 @@
-'use client';
+"use client";
 
-export default function Hero() {
+import React from 'react';
+import Link from 'next/link';
+import { Button } from './Button';
+
+export function Hero() {
   return (
-    <section style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '120px 24px 80px',
-      position: 'relative',
-      overflow: 'hidden',
-      textAlign: 'center',
-    }}>
-      {/* Badge */}
-      <div className="reveal visible" style={{ marginBottom: '28px' }}>
-        <span className="badge badge-accent">
-          For paranoid creators
-        </span>
+    <section className="min-h-[85vh] flex flex-col items-center justify-center pt-12 pb-20 px-8 text-center relative overflow-hidden">
+      <div className="inline-flex items-center gap-[7px] px-[13px] py-[5px] rounded-full bg-[var(--border-subtle)] border border-[var(--border-strong)] font-mono text-[9px] font-bold tracking-[0.2em] uppercase text-[var(--text-secondary)] mb-7 animate-in fade-in slide-in-from-bottom-4">
+        <span className="w-[5px] h-[5px] rounded-full bg-purple-500"></span>
+        For paranoid creators
       </div>
-
-      {/* Headline */}
-      <h1 className="reveal visible" style={{
-        fontSize: 'clamp(48px, 8vw, 92px)',
-        fontWeight: 500,
-        letterSpacing: '-0.02em',
-        lineHeight: 1.04,
-        maxWidth: '840px',
-        marginBottom: '28px',
-        fontFamily: 'var(--font-serif)'
-      }}>
-        Your Channel&apos;s{' '}
-        <span className="gradient-text">Security Layer.</span>
+      <h1 className="font-serif italic text-[clamp(44px,7vw,82px)] font-normal tracking-[-0.025em] leading-[1.04] max-w-[800px] mb-6 text-[var(--text-primary)] animate-in fade-in slide-in-from-bottom-8 delay-200">
+        Your Channel's<br/>
+        <span className="text-[var(--text-muted)]">Security Layer.</span>
       </h1>
-
-      {/* Sub */}
-      <p className="reveal visible reveal-delay-1" style={{
-        fontSize: 'clamp(16px, 2vw, 20px)',
-        color: 'var(--text-secondary)',
-        maxWidth: '520px',
-        lineHeight: 1.65,
-        fontWeight: 400,
-        marginBottom: '36px',
-      }}>
-        Editors upload videos here. You approve them.
-        We push to YouTube via API.{' '}
-        <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
-          No passwords shared. No 2 GB downloads.
-        </span>
+      <p className="text-[clamp(15px,2vw,18px)] text-[var(--text-secondary)] max-w-[500px] leading-[1.68] mb-9 animate-in fade-in slide-in-from-bottom-12 delay-300">
+        Editors upload videos here. You approve them. We push to YouTube via API.
+        <strong className="text-[var(--text-primary)] font-medium"> No passwords shared. No 2 GB downloads.</strong>
       </p>
-
-      {/* CTAs */}
-      <div className="reveal visible reveal-delay-2" style={{
-        display: 'flex',
-        gap: '16px',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginBottom: '72px',
-      }}>
-        <a 
-          href="#demo" 
-          className="btn" 
-          style={{ 
-            padding: '13px 32px', 
-            fontSize: '14px',
-            background: 'rgba(168,85,247,0.08)',
-            border: '1px solid rgba(168,85,247,0.15)',
-            color: '#a855f7',
-            transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#000';
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = '#000';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'rgba(168,85,247,0.08)';
-            e.currentTarget.style.color = '#a855f7';
-            e.currentTarget.style.borderColor = 'rgba(168,85,247,0.15)';
-          }}
-        >
-          Start Interactive Demo
-        </a>
-        <a href="#waitlist" className="btn btn-ghost" style={{ padding: '13px 32px', fontSize: '14px' }}>
-          Join Waitlist
-        </a>
+      <div className="flex gap-3 flex-wrap justify-center mb-16 animate-in fade-in slide-in-from-bottom-16 delay-500">
+        <Button variant="primary" className="!px-[30px] !py-[13px] !rounded-full !text-[13px] !font-medium hover:scale-[1.02]">Start Interactive Demo</Button>
+        <Button variant="ghost" className="!px-[28px] !py-[12px] !rounded-full !text-[13px]">Join Waitlist</Button>
       </div>
 
-      {/* Mock App Window */}
-      <div className="reveal visible reveal-delay-3 animate-float" style={{
-        width: '100%',
-        maxWidth: '820px',
-        borderRadius: '24px',
-        overflow: 'hidden',
-        background: '#ffffff',
-        border: '1px solid rgba(0,0,0,0.06)',
-        boxShadow: '0 20px 80px rgba(0,0,0,0.04)',
-      }}>
-        {/* Window Chrome */}
-        <div style={{
-          height: '44px',
-          background: '#f5f5f7',
-          borderBottom: '1px solid rgba(0,0,0,0.03)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          gap: '6px',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {['rgba(255,95,86,0.6)', 'rgba(255,189,46,0.6)', 'rgba(39,201,63,0.6)'].map((c, i) => (
-              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, border: `1px solid ${c}` }} />
-            ))}
+      {/* Mock app window */}
+      <div className="w-full max-w-[780px] rounded-[20px] overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-[0_24px_80px_rgba(0,0,0,0.05)] animate-in fade-in zoom-in-95 delay-700">
+        <div className="h-10 bg-[var(--bg-elevated)] border-b border-[var(--border-strong)] flex items-center justify-between px-[14px]">
+          <div className="flex gap-[5px]">
+            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(255,95,86,0.6)"}}></div>
+            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(255,189,46,0.6)"}}></div>
+            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(39,201,63,0.6)"}}></div>
           </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: 'rgba(0,0,0,0.02)',
-            border: '1px solid rgba(0,0,0,0.04)',
-            borderRadius: '6px',
-            padding: '4px 12px',
-          }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'rgba(0,0,0,0.25)' }}>
-              clipflow.app/dashboard
-            </span>
+          <div className="flex items-center gap-[5px] bg-black/5 border border-[var(--border-strong)] rounded-[5px] px-[10px] py-[3px] font-mono text-[10px] text-[var(--text-muted)]">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            clipflow.app/dashboard
           </div>
-          <div style={{ width: 48 }} />
+          <div style={{width:"40px"}}></div>
         </div>
-
-        {/* App Body */}
-        <div style={{ display: 'flex', height: '340px' }}>
-          {/* Sidebar */}
-          <div style={{
-            width: '200px',
-            background: '#fafafa',
-            borderRight: '1px solid rgba(0,0,0,0.04)',
-            padding: '24px 16px',
-            flexShrink: 0,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-              <div style={{
-                width: 34, height: 34,
-                borderRadius: '50%',
-                background: '#000',
-                flexShrink: 0,
-              }} />
+        <div className="flex h-[300px] text-left">
+          <div className="w-[180px] bg-[var(--bg-elevated)] border-r border-[var(--border-strong)] py-5 px-[14px] shrink-0">
+            <div className="flex items-center gap-[9px] mb-5">
+              <div className="w-[30px] h-[30px] rounded-full bg-[var(--primary)] shrink-0"></div>
               <div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)' }}>Main Channel</div>
-                <div style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>2.1M Subs</div>
+                <div className="text-[11px] font-semibold text-[var(--text-primary)]">Main Channel</div>
+                <div className="font-mono text-[9px] text-[var(--text-muted)] mt-[1px]">2.1M Subs</div>
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {[
-                { label: 'Pending Review', active: true, badge: '1' },
-                { label: 'Published', active: false },
-                { label: 'Editors', active: false },
-              ].map(item => (
-                <div key={item.label} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 12px',
-                  borderRadius: '12px',
-                  background: item.active ? 'rgba(0,0,0,0.04)' : 'transparent',
-                  fontSize: '12px',
-                  color: item.active ? 'var(--text-primary)' : 'var(--text-secondary)',
-                  fontWeight: item.active ? 500 : 400,
-                  cursor: 'pointer',
-                }}>
-                  {item.label}
-                  {item.badge && (
-                    <span style={{
-                      background: '#000',
-                      color: '#fff',
-                      fontSize: '9px',
-                      fontWeight: 700,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                    }}>{item.badge}</span>
-                  )}
-                </div>
-              ))}
-            </div>
+            <div className="flex items-center justify-between px-[10px] py-[9px] rounded-[10px] text-[11px] mb-[2px] bg-black/5 text-[var(--text-primary)] font-medium">Pending Review <span className="bg-[var(--primary)] text-white text-[8px] font-bold px-[5px] py-[1px] rounded-[4px]">1</span></div>
+            <div className="flex items-center justify-between px-[10px] py-[9px] rounded-[10px] text-[11px] mb-[2px] text-[var(--text-secondary)]">Published</div>
+            <div className="flex items-center justify-between px-[10px] py-[9px] rounded-[10px] text-[11px] mb-[2px] text-[var(--text-secondary)]">Editors</div>
           </div>
-
-          {/* Main Content */}
-          <div style={{ flex: 1, padding: '24px', overflow: 'hidden' }}>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              marginBottom: '4px',
-            }}>Pending Uploads</div>
-            <div style={{
-              fontSize: '11px',
-              color: 'var(--text-secondary)',
-              marginBottom: '20px',
-            }}>
-              Files uploaded by{' '}
-              <span style={{ color: 'var(--text-primary)' }}>@Editor_Mike</span>
-              {' '}waiting for approval.
-            </div>
-
-            {/* Video Card */}
-            <div style={{
-              background: '#faf9f6',
-              border: '1px solid rgba(0,0,0,0.04)',
-              borderRadius: '12px',
-              padding: '16px',
-              display: 'flex',
-              gap: '16px',
-              alignItems: 'center',
-            }}>
-              {/* Thumbnail */}
-              <div style={{
-                width: '120px',
-                aspectRatio: '16/9',
-                background: 'rgba(255,255,255,0.04)',
-                borderRadius: '8px',
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-              }}>
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
-                }} />
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
-                </svg>
-                <span style={{
-                  position: 'absolute', bottom: 4, right: 6,
-                  fontSize: '9px', fontFamily: 'var(--font-mono)',
-                  color: 'rgba(255,255,255,0.5)',
-                }}>10:24</span>
+          <div className="flex-1 p-5 overflow-hidden">
+            <div className="text-[13px] font-semibold text-[var(--text-primary)] mb-[3px]">Pending Uploads</div>
+            <div className="text-[10px] text-[var(--text-secondary)] mb-4">Files uploaded by <strong className="text-[var(--text-primary)]">@Editor_Mike</strong> waiting for approval.</div>
+            <div className="bg-[var(--bg-deep)] border border-[var(--border-strong)] rounded-[11px] p-[14px] flex gap-[13px] items-center">
+              <div className="w-[96px] h-[54px] rounded-[7px] bg-gradient-to-br from-[#ddd8d0] to-[#c8c3ba] shrink-0 relative flex items-center justify-center">
+                <div className="w-[18px] h-[18px] rounded-full bg-white/80 flex items-center justify-center">
+                  <svg width="7" height="8" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg>
+                </div>
+                <div className="absolute bottom-1 right-1 font-mono text-[8px] text-white/65">10:24</div>
               </div>
-
-              {/* Meta */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '6px', alignItems: 'center' }}>
-                  <span style={{
-                    fontSize: '9px', fontFamily: 'var(--font-mono)', fontWeight: 700,
-                    color: '#000',
-                    background: 'rgba(0,0,0,0.04)',
-                    border: '1px solid rgba(0,0,0,0.06)',
-                    padding: '2px 7px', borderRadius: '4px',
-                    letterSpacing: '0.12em',
-                  }}>NEEDS REVIEW</span>
-                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>Uploaded 2h ago</span>
+              <div style={{flex:1, minWidth:0}}>
+                <div className="flex gap-[7px] items-center mb-[5px]">
+                  <span className="font-mono text-[8px] font-bold bg-[#b45309]/10 border border-[#b45309]/20 text-[#b45309] px-[6px] py-[2px] rounded-[4px] tracking-[0.12em]">NEEDS REVIEW</span>
+                  <span className="font-mono text-[9px] text-[var(--text-muted)]">Uploaded 2h ago</span>
                 </div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                  &quot;I built a SaaS in 24 hours&quot; — Final_v3.mp4
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                  2.4 GB · Ready to push to YouTube
-                </div>
+                <div className="text-[11px] font-semibold text-[var(--text-primary)] mb-[3px] truncate">"I built a SaaS in 24 hours" — Final_v3.mp4</div>
+                <div className="font-mono text-[9px] text-[var(--text-muted)]">2.4 GB · Ready to push to YouTube</div>
               </div>
-
-              {/* Action */}
-              <button style={{
-                padding: '8px 16px',
-                background: '#ffffff',
-                color: '#000',
-                borderRadius: '9999px',
-                border: 'none',
-                fontSize: '12px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}>
-                Review & Push
-              </button>
+              <button className="px-[14px] py-[7px] bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-full text-[11px] font-medium text-[var(--text-primary)] shrink-0 whitespace-nowrap hover:bg-black/5 transition-colors">Review & Push</button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        height: '200px',
-        background: 'linear-gradient(to top, var(--bg-deep), transparent)',
-        pointerEvents: 'none',
-      }} />
     </section>
   );
 }

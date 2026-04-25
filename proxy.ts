@@ -4,7 +4,9 @@ const isPublicRoute = createRouteMatcher([
   '/', 
   '/api/db-check',
   '/sign-in(.*)',
-  '/sign-up(.*)'
+  '/sign-up(.*)',
+  '/upload/(.*)',          // Editor upload pages are public
+  '/api/auth/(.*)',        // OAuth callbacks are public
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

@@ -1,32 +1,75 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+[data-theme="clipflow"] {
+  --color-base-100: #FAF9F6;
+  --color-base-200: #F5F4F0;
+  --color-base-300: #E5E4E0;
+  --color-base-content: #0a0a0a;
+  --color-primary: #0a0a0a;
+  --color-primary-content: #ffffff;
+  --color-neutral: #0a0a0a;
+  --color-neutral-content: #ffffff;
+}
+
+[data-theme="dim"] {
+  color-scheme: dark;
+  --color-base-100: oklch(30.857% 0.023 264.149);
+  --color-base-200: oklch(28.036% 0.019 264.182);
+  --color-base-300: oklch(26.346% 0.018 262.177);
+  --color-base-content: oklch(82.901% 0.031 222.959);
+  --color-primary: oklch(86.133% 0.141 139.549);
+  --color-primary-content: oklch(17.226% 0.028 139.549);
+  --color-secondary: oklch(73.375% 0.165 35.353);
+  --color-secondary-content: oklch(14.675% 0.033 35.353);
+  --color-accent: oklch(74.229% 0.133 311.379);
+  --color-accent-content: oklch(14.845% 0.026 311.379);
+  --color-neutral: oklch(24.731% 0.02 264.094);
+  --color-neutral-content: oklch(82.901% 0.031 222.959);
+}
+
+[data-theme="business"] {
+  color-scheme: dark;
+  --color-base-100: oklch(24.353% 0 0);
+  --color-base-200: oklch(22.648% 0 0);
+  --color-base-300: oklch(20.944% 0 0);
+  --color-base-content: oklch(84.87% 0 0);
+  --color-primary: oklch(41.703% 0.099 251.473);
+  --color-primary-content: oklch(88.34% 0.019 251.473);
+  --color-secondary: oklch(64.092% 0.027 229.389);
+  --color-secondary-content: oklch(12.818% 0.005 229.389);
+  --color-accent: oklch(67.271% 0.167 35.791);
+  --color-accent-content: oklch(13.454% 0.033 35.791);
+  --color-neutral: oklch(27.441% 0.013 253.041);
+  --color-neutral-content: oklch(85.488% 0.002 253.041);
+}
 
 /* ─────────────────────────────────────────────
    DESIGN TOKENS
 ───────────────────────────────────────────── */
 :root {
-  --bg-deep: #FAF9F6;
-  /* Creamy off-white */
-  --bg-surface: #ffffff;
-  --bg-elevated: #f5f5f7;
+  --bg-deep: var(--color-base-100, #FAF9F6);
+  --bg-surface: var(--color-base-100, #ffffff);
+  --bg-elevated: var(--color-base-200, #f5f5f7);
 
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-bg: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+  --glass-border: color-mix(in srgb, var(--text-primary) 5%, transparent);
   --glass-blur: 20px;
 
-  --text-primary: #111111;
-  --text-secondary: #666666;
-  --text-muted: #999999;
+  --text-primary: var(--color-base-content, #111111);
+  --text-secondary: color-mix(in srgb, var(--text-primary) 60%, transparent);
+  --text-muted: color-mix(in srgb, var(--text-primary) 40%, transparent);
 
-  --accent-pink: #000000;
-  --accent-purple: #333333;
-  --accent-glow-1: rgba(0, 0, 0, 0.02);
-  --accent-glow-2: rgba(0, 0, 0, 0.01);
+  --accent-pink: var(--color-primary, #000000);
+  --accent-purple: var(--color-secondary, #333333);
+  --accent-glow-1: color-mix(in srgb, var(--text-primary) 2%, transparent);
+  --accent-glow-2: color-mix(in srgb, var(--text-primary) 1%, transparent);
 
-  --primary: #000000;
-  --primary-hover: #333333;
+  --primary: var(--color-primary, #000000);
+  --primary-hover: var(--color-primary-focus, #333333);
 
-  --border-subtle: rgba(0, 0, 0, 0.04);
-  --border-strong: rgba(0, 0, 0, 0.08);
+  --border-subtle: color-mix(in srgb, var(--text-primary) 4%, transparent);
+  --border-strong: color-mix(in srgb, var(--text-primary) 8%, transparent);
 
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: var(--font-playfair), serif;
@@ -46,14 +89,14 @@
   --bg-color: var(--bg-deep);
   --fg-color: var(--text-primary);
   --fg-secondary: var(--text-secondary);
-  --primary: #000000;
+  --primary: var(--color-primary, #000000);
   --secondary: var(--text-secondary);
-  --accent: rgba(0, 0, 0, 0.05);
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(0, 0, 0, 0.06);
+  --accent: color-mix(in srgb, var(--text-primary) 5%, transparent);
+  --card-bg: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  --card-border: color-mix(in srgb, var(--text-primary) 6%, transparent);
   --card-blur: var(--glass-blur);
   --muted: var(--text-muted);
-  --surface-glow: rgba(0, 0, 0, 0.02);
+  --surface-glow: color-mix(in srgb, var(--text-primary) 2%, transparent);
 }
 
 /* ─────────────────────────────────────────────
@@ -407,3 +450,40 @@ h6 {
 .input:focus {
   border-color: rgba(255, 255, 255, 0.25);
 }
+
+/* ─────────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-in {
+  animation-duration: 0.8s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-in { animation-name: fade-in; }
+.slide-in-from-bottom-4 { animation-name: slide-in-from-bottom; transform: translateY(4px); }
+.slide-in-from-bottom-8 { animation-name: slide-in-from-bottom; transform: translateY(8px); }
+.slide-in-from-bottom-12 { animation-name: slide-in-from-bottom; transform: translateY(12px); }
+.slide-in-from-bottom-16 { animation-name: slide-in-from-bottom; transform: translateY(16px); }
+.zoom-in-95 { animation-name: zoom-in; transform: scale(0.95); }
+
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.duration-1000 { animation-duration: 1000ms; }

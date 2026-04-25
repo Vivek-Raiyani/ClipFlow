@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import { Play } from 'lucide-react';
 
-type BrandName = 
+export type BrandName = 
   | 'cloudways' 
   | 'dropbox' 
   | 'gmail' 
@@ -13,12 +13,13 @@ type BrandName =
   | 'x' 
   | 'youtube';
 
-interface BrandIconProps {
-  name: BrandName;
+export interface BrandIconProps {
+  name?: BrandName;
   size?: number;
   className?: string;
+  color?: string;
   /**
-   * If true, the icon will use the current text color (currentColor).
+   * If true, the icon will use the current text color (currentColor) or the color prop.
    * This works by using CSS masks.
    */
   monochrome?: boolean;
@@ -28,12 +29,18 @@ interface BrandIconProps {
  * BrandIcon component for rendering brand SVGs from /public/icons.
  * Supports monochrome mode to match your Apple-inspired minimalist aesthetic.
  */
-export default function BrandIcon({ 
+export function BrandIcon({ 
   name, 
   size = 20, 
   className = '', 
+  color,
   monochrome = true 
 }: BrandIconProps) {
+  // If no name is provided, render the ClipFlow default logo (a Play icon)
+  if (!name) {
+    return <Play size={size} className={className} style={{ color: color || 'inherit' }} fill={color || 'currentColor'} strokeWidth={1.5} />;
+  }
+
   const iconPath = `/icons/${name}.svg`;
 
   if (monochrome) {
@@ -43,7 +50,7 @@ export default function BrandIcon({
         style={{
           width: `${size}px`,
           height: `${size}px`,
-          backgroundColor: 'currentColor',
+          backgroundColor: color || 'currentColor',
           WebkitMaskImage: `url(${iconPath})`,
           maskImage: `url(${iconPath})`,
           WebkitMaskRepeat: 'no-repeat',
@@ -75,3 +82,5 @@ export default function BrandIcon({
     />
   );
 }
+
+export default BrandIcon;
