@@ -37,15 +37,8 @@ export default async function DashboardPage() {
   const pendingCount = Number(pendingFiles[0]?.count ?? 0);
   const editorCount = Number(editors[0]?.count ?? 0);
 
-  const counts = {
-    projects: allProjects.length,
-    pending: pendingCount,
-    published: publishedCount,
-    editors: editorCount,
-  };
-
   return (
-    <DashboardLayout counts={counts}>
+    <DashboardLayout>
       {/* Header */}
       <div className="dash-header">
         <div>

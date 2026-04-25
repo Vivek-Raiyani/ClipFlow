@@ -28,6 +28,16 @@ export const youtubeChannels = pgTable("youtube_channels", {
   updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
 });
 
+export const googleDriveConnections = pgTable("google_drive_connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  email: text("email").notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
+});
+
 // Relationship table to link editors to creators
 export const creatorEditorRelationships = pgTable("creator_editor_relationships", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/Button";
 import { Badge } from "@/app/components/Badge";
@@ -85,6 +85,11 @@ export function ProjectDetailClient({
   const [inviting, setInviting] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -189,7 +194,7 @@ export function ProjectDetailClient({
               {project.visibility === "private" ? "Private" : project.visibility === "public" ? "Public" : "Unlisted"}
             </span>
             <span className="pd-pill">
-              Created {new Date(project.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              Created {mounted ? new Date(project.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "..."}
             </span>
           </div>
         </div>
@@ -246,7 +251,7 @@ export function ProjectDetailClient({
                     <span>·</span>
                     <span>{file.uploaderName ?? file.uploaderEmail ?? "Unknown"}</span>
                     <span>·</span>
-                    <span>{formatRelTime(file.createdAt)}</span>
+                    <span>{mounted ? formatRelTime(file.createdAt) : "..."}</span>
                     <span>·</span>
                     <span style={{
                       fontWeight: 700,
@@ -337,7 +342,7 @@ export function ProjectDetailClient({
           </div>
           <div className="pd-panel-row">
             <span className="pd-panel-key">Created</span>
-            <span className="pd-panel-val">{new Date(project.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+            <span className="pd-panel-val">{mounted ? new Date(project.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "..."}</span>
           </div>
           <div className="pd-panel-row">
             <span className="pd-panel-key">Total files</span>
