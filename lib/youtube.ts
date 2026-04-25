@@ -1,8 +1,16 @@
 import { google } from "googleapis";
+import { decrypt } from "@/lib/crypto";
 
 const YOUTUBE_CLIENT_ID = process.env.YOUTUBE_CLIENT_ID;
 const YOUTUBE_CLIENT_SECRET = process.env.YOUTUBE_CLIENT_SECRET;
 const YOUTUBE_REDIRECT_URI = process.env.NEXT_PUBLIC_YOUTUBE_REDIRECT_URI;
+
+/**
+ * YouTube API Client Utility
+ * 
+ * Handles authentication and client instantiation for YouTube Data API v3.
+ * All tokens passed here are automatically decrypted if they are in the versioned format.
+ */
 
 export const OAuth2Client = new google.auth.OAuth2(
   YOUTUBE_CLIENT_ID,
@@ -24,9 +32,10 @@ export const getYoutubeClient = (accessToken: string, refreshToken?: string) => 
     YOUTUBE_REDIRECT_URI
   );
 
+  // Decrypt tokens before usage
   auth.setCredentials({
-    access_token: accessToken,
-    refresh_token: refreshToken,
+    access_token: decrypt(accessToken),
+    refresh_token: refreshToken ? decrypt(refreshToken) : undefined,
   });
 
   return google.youtube({ version: "v3", auth });
@@ -39,10 +48,18 @@ export const refreshAccessToken = async (refreshToken: string) => {
     YOUTUBE_REDIRECT_URI
   );
 
-  auth.setCredentials({ refresh_token: refreshToken });
-  const { credentials } = await auth.refreshAccessToken();
-  return credentials.access_token!;
+  const decryptedRefreshToken = decrypt(refreshToken);
+  auth.setCredentials({ refresh_token: decryptedRefreshToken });
+  
+  try {
+    const { credentials } = await auth.refreshAccessToken();
+    return credentials.access_token!;
+  } catch (error) {
+    console.error("[YouTube] Failed to refresh access token:", error);
+    throw error;
+  }
 };
+
 
 export const getChannelInfo = async (accessToken: string) => {
   const youtube = getYoutubeClient(accessToken);

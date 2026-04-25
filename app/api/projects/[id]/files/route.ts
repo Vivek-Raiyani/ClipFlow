@@ -4,14 +4,27 @@ import { projectFiles, users } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, desc } from "drizzle-orm";
 
+/**
+ * Project Files API
+ * 
+ * Fetches all file versions associated with a specific project.
+ * Joins with the users table to provide uploader details for each file.
+ */
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: projectId } = await params;
   try {
-    const { id: projectId } = await params;
     const { userId: clerkId } = await auth();
-    if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!clerkId) {
+      console.warn("[Project-Files] Unauthorized access attempt.");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.log(`[Project-Files] Fetching files for project: ${projectId}`);
 
     const files = await db
       .select({
@@ -34,9 +47,13 @@ export async function GET(
       .where(eq(projectFiles.projectId, projectId))
       .orderBy(desc(projectFiles.createdAt));
 
+    console.log(`[Project-Files] Found ${files.length} files.`);
+
     return NextResponse.json(files);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
+    console.error(`[Project-Files] GET Error for project ${projectId}:`, err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+

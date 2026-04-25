@@ -4,15 +4,30 @@ import { users, creatorEditorRelationships } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 
+/**
+ * Team Listing API
+ * 
+ * Fetches all editors currently associated with the authenticated creator.
+ * This allows creators to see who has access to their projects.
+ */
+
 export async function GET() {
   try {
     const { userId: clerkId } = await auth();
-    if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!clerkId) {
+      console.warn("[Team-API] Unauthorized access attempt.");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const creator = await db.query.users.findFirst({
       where: eq(users.clerkId, clerkId),
     });
-    if (!creator) return NextResponse.json([]);
+    if (!creator) {
+      console.error(`[Team-API] Creator not synced for clerkId: ${clerkId}`);
+      return NextResponse.json([]);
+    }
+
+    console.log(`[Team-API] Fetching active editors for creator: ${creator.id}`);
 
     const relationships = await db
       .select({
@@ -32,9 +47,13 @@ export async function GET() {
         )
       );
 
+    console.log(`[Team-API] Found ${relationships.length} active editors.`);
+
     return NextResponse.json(relationships);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
+    console.error("[Team-API] Fatal Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+

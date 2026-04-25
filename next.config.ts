@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
+/**
+ * Next.js Configuration
+ * 
+ * Optimization for VPS:
+ * - output: 'standalone' reduces Docker image size and RAM usage.
+ * - reactCompiler: enables the Next.js 15+ React compiler for better performance.
+ */
 const nextConfig: NextConfig = {
+  output: 'standalone', 
   reactCompiler: true,
   cacheComponents: false,
   experimental: {
@@ -10,3 +18,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

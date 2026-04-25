@@ -4,10 +4,21 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, R2_BUCKET_NAME } from "@/lib/r2";
 import { auth } from "@clerk/nextjs/server";
 
+/**
+ * Presigned URL API
+ * 
+ * Generates a temporary upload URL for Cloudflare R2.
+ * This allows the client to upload files directly to R2, bypassing the Next.js server
+ * and saving significantly on VPS memory and bandwidth.
+ */
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) {
+      console.warn("[Upload-Presign] Unauthorized access attempt.");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const { fileName, fileType, projectId } = await req.json();
 
@@ -18,9 +29,11 @@ export async function POST(req: Request) {
     // Generate a unique key for the file in R2
     const key = `projects/${projectId}/${Date.now()}-${fileName}`;
 
+    console.log(`[Upload-Presign] Generating URL for: ${fileName} (Project: ${projectId})`);
+
     // Dev fallback if R2 is not configured
     if (!process.env.R2_ACCOUNT_ID || process.env.R2_ACCOUNT_ID === "your_cloudflare_account_id") {
-      console.warn("R2 is not configured. Falling back to mock upload.");
+      console.warn("[Upload-Presign] R2 is not configured. Falling back to mock upload.");
       return NextResponse.json({ signedUrl: "mock", key });
     }
 
@@ -33,10 +46,12 @@ export async function POST(req: Request) {
     // URL expires in 60 minutes
     const signedUrl = await getSignedUrl(r2, command, { expiresIn: 3600 });
 
+    console.log(`[Upload-Presign] Successfully generated URL for key: ${key}`);
     return NextResponse.json({ signedUrl, key });
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    console.error("Error generating presigned URL:", err);
+    console.error("[Upload-Presign] Fatal Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+

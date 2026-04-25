@@ -1,20 +1,29 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { projects, projectFiles, users, auditLogs } from "@/lib/db/schema";
+import { projects, projectFiles, users, auditLogs, youtubeChannels } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { refreshAccessToken } from "@/lib/youtube";
 import { publishToYouTube } from "@/lib/youtube-publisher";
 import { deleteFromR2 } from "@/lib/r2";
+import { encrypt } from "@/lib/crypto";
+
+/**
+ * Project Publish API ([id])
+ * 
+ * Specifically triggers the publication of a project's approved "final" file
+ * to the associated YouTube channel.
+ */
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: projectId } = await params;
   try {
-    const { id: projectId } = await params;
     const { userId: clerkId } = await auth();
     if (!clerkId) {
+      console.warn("[Project-Publish] Unauthorized access attempt.");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -22,9 +31,9 @@ export async function POST(
     const user = await db.query.users.findFirst({
       where: eq(users.clerkId, clerkId),
     });
-    if (!user) return NextResponse.json({ error: "User not synced" }, { status: 404 });
-    if (!user.youtubeRefreshToken) {
-      return NextResponse.json({ error: "YouTube account not connected" }, { status: 400 });
+    if (!user) {
+      console.error(`[Project-Publish] User not synced: ${clerkId}`);
+      return NextResponse.json({ error: "User not synced" }, { status: 404 });
     }
 
     // 2. Resolve Project
@@ -33,10 +42,26 @@ export async function POST(
     });
     if (!project) return NextResponse.json({ error: "Project not found" }, { status: 404 });
     if (project.creatorId !== user.id) {
+      console.warn(`[Project-Publish] Forbidden: User ${user.id} tried to publish project ${projectId}`);
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // 3. Resolve Approved Final File
+    // 3. Resolve Channel
+    const channelId = project.channelId || user.activeChannelId;
+    if (!channelId) {
+      return NextResponse.json({ error: "No YouTube channel associated with this project" }, { status: 400 });
+    }
+
+    const channel = await db.query.youtubeChannels.findFirst({
+      where: eq(youtubeChannels.id, channelId),
+    });
+
+    if (!channel) {
+      console.error(`[Project-Publish] Channel ${channelId} not found for project ${projectId}`);
+      return NextResponse.json({ error: "Associated YouTube channel not found" }, { status: 404 });
+    }
+
+    // 4. Resolve Approved Final File
     const finalFile = await db.query.projectFiles.findFirst({
       where: and(
         eq(projectFiles.projectId, projectId),
@@ -47,27 +72,36 @@ export async function POST(
     });
 
     if (!finalFile) {
+      console.warn(`[Project-Publish] No approved final file found for project: ${projectId}`);
       return NextResponse.json(
         { error: "No approved final file found to publish" },
         { status: 400 }
       );
     }
 
-    // 4. Refresh YouTube Access Token
-    const newAccessToken = await refreshAccessToken(user.youtubeRefreshToken);
-    await db.update(users)
-      .set({ youtubeAccessToken: newAccessToken })
-      .where(eq(users.id, user.id));
+    console.log(`[Project-Publish] Starting publication for project: ${project.title}`);
 
-    // 5. Publish to YouTube
+    // 5. Refresh YouTube Access Token
+    console.log("[Project-Publish] Refreshing access token...");
+    const plaintextAccessToken = await refreshAccessToken(channel.refreshToken);
+    
+    // Encrypt the new token before saving
+    const encryptedAccessToken = encrypt(plaintextAccessToken);
+    
+    await db.update(youtubeChannels)
+      .set({ accessToken: encryptedAccessToken, updatedAt: new Date() })
+      .where(eq(youtubeChannels.id, channel.id));
+
+    // 6. Publish to YouTube
+    console.log("[Project-Publish] Streaming to YouTube...");
     const ytResponse = await publishToYouTube({
-      accessToken: newAccessToken,
-      refreshToken: user.youtubeRefreshToken,
+      accessToken: plaintextAccessToken,
+      refreshToken: channel.refreshToken,
       r2Key: finalFile.r2Key,
       title: project.title,
       description: project.description || "",
       tags: project.tags || "",
-      categoryId: project.categoryId || "22", // Default to People & Blogs
+      categoryId: project.categoryId || "22",
       privacyStatus: project.visibility as any,
     });
 
@@ -75,11 +109,14 @@ export async function POST(
       throw new Error("YouTube API did not return a video ID");
     }
 
-    // 6. Update Project and Audit Log
+    console.log(`[Project-Publish] Success! YouTube Video ID: ${ytResponse.id}`);
+
+    // 7. Update Project and Audit Log
     await db.update(projects)
       .set({ 
         youtubeVideoId: ytResponse.id,
-        status: "published"
+        status: "published",
+        updatedAt: new Date()
       })
       .where(eq(projects.id, projectId));
 
@@ -91,22 +128,23 @@ export async function POST(
       details: { youtubeVideoId: ytResponse.id },
     });
 
-    // 7. Delete the file from R2 to save space
+    // 8. Delete the file from R2 to save space (Cleanup)
     if (finalFile.r2Key) {
+      console.log(`[Project-Publish] Cleaning up R2 storage for key: ${finalFile.r2Key}`);
       await deleteFromR2(finalFile.r2Key);
-      // We might also want to set r2Key to null in the database, but since we are replacing it
-      // with a youtube link, maybe we don't need to nullify it, or maybe we do to avoid broken links.
-      // For now, let's just delete the actual object from storage.
     }
 
     return NextResponse.json({ 
       success: true, 
-      youtubeVideoId: ytResponse.id 
+      youtubeVideoId: ytResponse.id,
+      youtubeUrl: `https://youtu.be/${ytResponse.id}`
     });
 
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    console.error("[YouTube Publish Error]:", err.message);
+    console.error(`[Project-Publish] Fatal Error for ${projectId}:`, err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
+
