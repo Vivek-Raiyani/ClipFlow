@@ -18,6 +18,12 @@ export async function POST(req: Request) {
     // Generate a unique key for the file in R2
     const key = `projects/${projectId}/${Date.now()}-${fileName}`;
 
+    // Dev fallback if R2 is not configured
+    if (!process.env.R2_ACCOUNT_ID || process.env.R2_ACCOUNT_ID === "your_cloudflare_account_id") {
+      console.warn("R2 is not configured. Falling back to mock upload.");
+      return NextResponse.json({ signedUrl: "mock", key });
+    }
+
     const command = new PutObjectCommand({
       Bucket: R2_BUCKET_NAME,
       Key: key,

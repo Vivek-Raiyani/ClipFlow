@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from './Button';
+import { ThemeSwitcher } from './ThemeSwitcher';
 
 export function Navbar() {
   return (
@@ -16,6 +17,7 @@ export function Navbar() {
         <Link className="px-[13px] py-[6px] rounded-full text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all" href="#">Pricing</Link>
       </div>
       <div className="flex items-center gap-2">
+        <ThemeSwitcher />
         <Link className="px-4 py-[7px] border border-[var(--border-strong)] rounded-full text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-subtle)] hover:bg-[var(--border-subtle)] transition-all" href="/dashboard">Dashboard</Link>
         <Button variant="primary" className="px-4 py-[7px] !rounded-full !text-[12px] !font-medium">Get Started</Button>
       </div>

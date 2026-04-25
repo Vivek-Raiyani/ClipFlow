@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getDriveClient } from "@/lib/drive";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, googleDriveConnections } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { r2, R2_BUCKET_NAME } from "@/lib/r2";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -19,23 +19,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fileId or projectId" }, { status: 400 });
     }
 
-    const user = await db.query.users.findFirst({
-      where: eq(users.clerkId, clerkId)
+    const user = await db.query.users.findFirst({ where: eq(users.clerkId, clerkId) });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    const driveConn = await db.query.googleDriveConnections.findFirst({
+      where: eq(googleDriveConnections.userId, user.id),
     });
 
-    if (!user || !user.driveRefreshToken) {
+    if (!driveConn) {
       return NextResponse.json({ error: "Drive not connected" }, { status: 400 });
     }
 
-    const drive = getDriveClient(user.driveAccessToken || "", user.driveRefreshToken);
+    const drive = getDriveClient(driveConn.accessToken, driveConn.refreshToken);
 
-    // 1. Get file metadata (name, mimeType)
+    // 1. Get file metadata (name, mimeType, size)
     const fileMeta = await drive.files.get({
       fileId,
       fields: "name, mimeType, size",
     });
 
     if (!fileMeta.data.name) throw new Error("Could not find file info");
+
+    // R2 not configured — return metadata only so finalize can still record the Drive file
+    if (!process.env.R2_ACCOUNT_ID || process.env.R2_ACCOUNT_ID === "your_cloudflare_account_id") {
+      console.warn("R2 not configured. Skipping R2 upload for Drive import.");
+      const mockKey = `projects/${projectId}/drive-import-${crypto.randomUUID()}-${fileMeta.data.name}`;
+      return NextResponse.json({
+        success: true,
+        key: mockKey,
+        fileName: fileMeta.data.name,
+        fileSize: Number(fileMeta.data.size) || 0,
+      });
+    }
 
     // 2. Stream file content from Drive
     const driveRes = await drive.files.get(
@@ -59,11 +74,10 @@ export async function POST(req: Request) {
 
     await upload.done();
 
-    // 4. Return the key so the frontend can finalize it
-    return NextResponse.json({ 
-      success: true, 
-      key: r2Key, 
-      fileName: fileMeta.data.name, 
+    return NextResponse.json({
+      success: true,
+      key: r2Key,
+      fileName: fileMeta.data.name,
       fileSize: Number(fileMeta.data.size) || 0,
     });
 

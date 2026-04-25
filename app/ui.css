@@ -722,8 +722,17 @@
 .lp-footer {
   padding: 40px; text-align: center;
   border-top: 1px solid var(--ui-border);
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column; gap: 12px;
 }
+.footer-nav {
+  display: flex; gap: 16px; justify-content: center; margin-bottom: 4px;
+}
+.footer-link {
+  font-family: var(--ui-mono); font-size: 8px; font-weight: 700;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--ui-fg3); text-decoration: none; transition: color 0.15s;
+}
+.footer-link:hover { color: var(--ui-fg); }
 .footer-text { font-family: var(--ui-mono); font-size: 9px; color: var(--ui-fg3); letter-spacing: 0.15em; text-transform: uppercase; }
 
 /* Loading skeleton */

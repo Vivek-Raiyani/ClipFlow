@@ -6,7 +6,9 @@ import { Button } from "@/app/components/Button";
 import { Badge } from "@/app/components/Badge";
 import { ModalShell } from "@/app/components/Modal";
 import { InputField } from "@/app/components/InputField";
-import { Mail } from "lucide-react";
+import { UploadZone } from "@/app/components/UploadZone";
+import { Mail, Film } from "lucide-react";
+import useDrivePicker from "react-google-drive-picker";
 
 interface ProjectFile {
   id: string;
@@ -84,6 +86,8 @@ export function ProjectDetailClient({
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [openPicker] = useDrivePicker();
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -124,6 +128,150 @@ export function ProjectDetailClient({
       }
     } finally {
       setPublishing(false);
+    }
+  };
+
+  // Fire-and-forget: attempt to mirror the uploaded file to Drive in the background.
+  // Never awaited so it cannot block the main upload flow or slow down finalize.
+  const mirrorToDriveAsync = (file: File) => {
+    fetch('/api/drive/token')
+      .then(r => r.ok ? r.json() : null)
+      .then(tokenData => {
+        if (!tokenData?.accessToken) return;
+        return fetch('https://www.googleapis.com/drive/v3/files', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${tokenData.accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: file.name, mimeType: file.type }),
+        })
+          .then(r => r.json())
+          .then(created => {
+            if (!created.id) return;
+            return fetch(`https://www.googleapis.com/upload/drive/v3/files/${created.id}?uploadType=media`, {
+              method: 'PATCH',
+              headers: { Authorization: `Bearer ${tokenData.accessToken}`, 'Content-Type': file.type },
+              body: file,
+            });
+          });
+      })
+      .catch(err => console.warn("[Drive mirror skipped]:", err.message));
+  };
+
+  const handleLocalUpload = async (file: File, type: string) => {
+    setUploading(true);
+    try {
+      const r2Res = await fetch('/api/upload/presigned-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: file.name, fileType: file.type, projectId: project.id })
+      });
+      const { signedUrl, key } = await r2Res.json();
+      if (!signedUrl) throw new Error("Failed to get presigned URL");
+
+      // Skip actual R2 PUT if mocking locally
+      if (signedUrl !== "mock") {
+        await fetch(signedUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type }
+        });
+      }
+
+      // Mirror to Drive in background — does NOT block finalize
+      mirrorToDriveAsync(file);
+
+      const finRes = await fetch('/api/upload/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          r2Key: key,
+          fileName: file.name,
+          fileSize: file.size,
+          type: activeTab
+        })
+      });
+      const newFile = await finRes.json();
+      if (newFile.error) throw new Error(newFile.error);
+      setFiles(prev => [newFile, ...prev]);
+      showToast("File uploaded successfully", "success");
+    } catch (error) {
+      console.error(error);
+      showToast("Upload failed", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDriveImport = async () => {
+    setUploading(true);
+    try {
+      const res = await fetch('/api/drive/token');
+      const data = await res.json();
+
+      if (res.status === 400 && data.error === "Drive not connected") {
+        setUploading(false);
+        window.location.href = '/api/auth/drive';
+        return;
+      }
+
+      if (!res.ok || !data.accessToken) throw new Error(data.error || "Failed to load token");
+
+      openPicker({
+        clientId: "266542035407-bo887f7pf7hce2ivv2kbvqfeo74dlqkl.apps.googleusercontent.com",
+        developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY || "", // Optional if token is provided in some cases
+        viewId: "DOCS",
+        setIncludeFolders: true,
+        token: data.accessToken,
+        showUploadView: true,
+        showUploadFolders: true,
+        supportDrives: true,
+        multiselect: false,
+        callbackFunction: (data) => {
+          if (data.action === 'picked') {
+            const fileId = data.docs[0].id;
+            selectDriveFile(fileId);
+          } else if (data.action === 'cancel') {
+            setUploading(false);
+          }
+        },
+      });
+    } catch (err) {
+      showToast("Failed to launch Drive picker", "error");
+      setUploading(false);
+    }
+  };
+
+  const selectDriveFile = async (fileId: string) => {
+    setUploading(true);
+    try {
+      const importRes = await fetch('/api/drive/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileId, projectId: project.id })
+      });
+      const importData = await importRes.json();
+      if (importData.success) {
+          const finRes = await fetch('/api/upload/finalize', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  projectId: project.id,
+                  r2Key: importData.key,
+                  fileName: importData.fileName,
+                  fileSize: importData.fileSize,
+                  type: activeTab
+              })
+          });
+          const finData = await finRes.json();
+          setFiles(prev => [finData, ...prev]);
+          showToast("File imported from Drive", "success");
+      } else {
+          showToast(importData.error || "Import failed", "error");
+      }
+    } catch (err) {
+        showToast("Import failed", "error");
+    } finally {
+        setUploading(false);
     }
   };
 
@@ -212,6 +360,20 @@ export function ProjectDetailClient({
           ))}
         </div>
 
+        {/* Upload Zone */}
+        {project.status !== "published" && (
+          <div style={{ marginTop: "24px", marginBottom: "32px", display: "flex", justifyContent: "center" }}>
+            <UploadZone
+               tabs={[]}
+               title={`Upload ${activeTab} file`}
+               subtitle="Upload from computer or import from Google Drive"
+               onLocalUpload={handleLocalUpload}
+               onImportClick={handleDriveImport}
+               uploading={uploading}
+            />
+          </div>
+        )}
+
         {/* Files */}
         <div className="files-section-header">
           <div className="files-title">Uploaded Files</div>
@@ -293,14 +455,27 @@ export function ProjectDetailClient({
                 <div className="yt-label">Channel Connected</div>
               </div>
               {project.youtubeVideoId ? (
-                <a
-                  href={`https://youtu.be/${project.youtubeVideoId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: "12px", color: "#16a34a", fontFamily: "var(--ui-mono)", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", textDecoration: "none" }}
-                >
-                  ↗ View on YouTube
-                </a>
+                <>
+                  <div style={{ marginBottom: "16px", borderRadius: "12px", overflow: "hidden" }}>
+                    <iframe 
+                      width="100%" 
+                      height="180" 
+                      src={`https://www.youtube.com/embed/${project.youtubeVideoId}`} 
+                      title="YouTube video player" 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen 
+                    />
+                  </div>
+                  <a
+                    href={`https://youtu.be/${project.youtubeVideoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px", background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: "12px", color: "#16a34a", fontFamily: "var(--ui-mono)", fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", textDecoration: "none" }}
+                  >
+                    ↗ View on YouTube
+                  </a>
+                </>
               ) : (
                 <>
                   <button
@@ -412,6 +587,8 @@ export function ProjectDetailClient({
           </ModalShell>
         </div>
       )}
+
+
 
       {/* Toast */}
       {toast && (

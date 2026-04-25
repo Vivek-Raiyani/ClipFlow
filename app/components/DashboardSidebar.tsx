@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { BrandIcon } from "@/app/components/BrandIcon";
 import { ChannelSwitcher } from "./ChannelSwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import {
   LayoutGrid,
   Clock,
@@ -96,6 +97,10 @@ export function DashboardSidebar({ counts = {} }: SidebarProps) {
           })}
         </div>
       ))}
+
+      <div style={{ padding: "0 16px", marginBottom: "16px", marginTop: "auto", display: "flex", justifyContent: "flex-end" }}>
+        <ThemeSwitcher />
+      </div>
 
       {/* User footer */}
       <div className="dash-user">

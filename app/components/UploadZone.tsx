@@ -8,6 +8,8 @@ interface UploadZoneProps {
   subtitle?: string;
   icon?: React.ReactNode;
   onImportClick?: () => void;
+  onLocalUpload?: (file: File, type: string) => void;
+  uploading?: boolean;
 }
 
 export function UploadZone({
@@ -15,9 +17,18 @@ export function UploadZone({
   title = 'Beam Data to R2',
   subtitle = 'Zero Egress Publication Protocol',
   icon = '🛰️',
-  onImportClick
+  onImportClick,
+  onLocalUpload,
+  uploading = false
 }: UploadZoneProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0] && onLocalUpload) {
+      onLocalUpload(e.target.files[0], activeTab ? activeTab.toLowerCase() : 'raw');
+    }
+  };
 
   return (
     <div style={{ maxWidth: '480px' }}>
@@ -41,14 +52,33 @@ export function UploadZone({
         <div className="upload-sub" style={{ marginTop: '4px' }}>{subtitle}</div>
       </div>
       
-      <Button 
-        variant="ghost" 
-        style={{ width: '100%', justifyContent: 'center', marginTop: '12px', borderRadius: '14px', padding: '14px' }}
-        icon={<Cloud size={14} strokeWidth={2} />}
-        onClick={onImportClick}
-      >
-        Import from Google Drive
-      </Button>
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        style={{ display: 'none' }} 
+        onChange={handleFileChange} 
+      />
+      
+      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+        <Button 
+          variant="primary" 
+          style={{ flex: 1, justifyContent: 'center', borderRadius: '14px', padding: '14px' }}
+          icon={<Cloud size={14} strokeWidth={2} />}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? 'Uploading...' : 'Upload File'}
+        </Button>
+        <Button 
+          variant="ghost" 
+          style={{ flex: 1, justifyContent: 'center', borderRadius: '14px', padding: '14px' }}
+          icon={<Cloud size={14} strokeWidth={2} />}
+          onClick={onImportClick}
+          disabled={uploading}
+        >
+          Google Drive
+        </Button>
+      </div>
     </div>
   );
 }

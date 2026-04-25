@@ -28,6 +28,10 @@ export default function SignUpPage() {
         </div>
       </div>
       <SignUp />
+      <div style={{ marginTop: "40px", display: "flex", gap: "16px" }}>
+        <a href="/privacy" style={{ fontFamily: "var(--ui-mono)", fontSize: "8px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ui-fg3)", textDecoration: "none" }}>Privacy</a>
+        <a href="/terms" style={{ fontFamily: "var(--ui-mono)", fontSize: "8px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ui-fg3)", textDecoration: "none" }}>Terms</a>
+      </div>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export function Hero() {
         For paranoid creators
       </div>
       <h1 className="font-serif italic text-[clamp(44px,7vw,82px)] font-normal tracking-[-0.025em] leading-[1.04] max-w-[800px] mb-6 text-[var(--text-primary)] animate-in fade-in slide-in-from-bottom-8 delay-200">
-        Your Channel's<br/>
+        Your Channel's<br />
         <span className="text-[var(--text-muted)]">Security Layer.</span>
       </h1>
       <p className="text-[clamp(15px,2vw,18px)] text-[var(--text-secondary)] max-w-[500px] leading-[1.68] mb-9 animate-in fade-in slide-in-from-bottom-12 delay-300">
@@ -28,15 +28,15 @@ export function Hero() {
       <div className="w-full max-w-[780px] rounded-[20px] overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-[0_24px_80px_rgba(0,0,0,0.05)] animate-in fade-in zoom-in-95 delay-700">
         <div className="h-10 bg-[var(--bg-elevated)] border-b border-[var(--border-strong)] flex items-center justify-between px-[14px]">
           <div className="flex gap-[5px]">
-            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(255,95,86,0.6)"}}></div>
-            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(255,189,46,0.6)"}}></div>
-            <div className="w-[9px] h-[9px] rounded-full" style={{background:"rgba(39,201,63,0.6)"}}></div>
+            <div className="w-[9px] h-[9px] rounded-full" style={{ background: "rgba(255,95,86,0.6)" }}></div>
+            <div className="w-[9px] h-[9px] rounded-full" style={{ background: "rgba(255,189,46,0.6)" }}></div>
+            <div className="w-[9px] h-[9px] rounded-full" style={{ background: "rgba(39,201,63,0.6)" }}></div>
           </div>
           <div className="flex items-center gap-[5px] bg-black/5 border border-[var(--border-strong)] rounded-[5px] px-[10px] py-[3px] font-mono text-[10px] text-[var(--text-muted)]">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
             clipflow.app/dashboard
           </div>
-          <div style={{width:"40px"}}></div>
+          <div style={{ width: "40px" }}></div>
         </div>
         <div className="flex h-[300px] text-left">
           <div className="w-[180px] bg-[var(--bg-elevated)] border-r border-[var(--border-strong)] py-5 px-[14px] shrink-0">
@@ -57,11 +57,11 @@ export function Hero() {
             <div className="bg-[var(--bg-deep)] border border-[var(--border-strong)] rounded-[11px] p-[14px] flex gap-[13px] items-center">
               <div className="w-[96px] h-[54px] rounded-[7px] bg-gradient-to-br from-[#ddd8d0] to-[#c8c3ba] shrink-0 relative flex items-center justify-center">
                 <div className="w-[18px] h-[18px] rounded-full bg-white/80 flex items-center justify-center">
-                  <svg width="7" height="8" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg>
+                  <svg width="7" height="8" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12" /></svg>
                 </div>
                 <div className="absolute bottom-1 right-1 font-mono text-[8px] text-white/65">10:24</div>
               </div>
-              <div style={{flex:1, minWidth:0}}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="flex gap-[7px] items-center mb-[5px]">
                   <span className="font-mono text-[8px] font-bold bg-[#b45309]/10 border border-[#b45309]/20 text-[#b45309] px-[6px] py-[2px] rounded-[4px] tracking-[0.12em]">NEEDS REVIEW</span>
                   <span className="font-mono text-[9px] text-[var(--text-muted)]">Uploaded 2h ago</span>

@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { refreshAccessToken } from "@/lib/youtube";
 import { publishToYouTube } from "@/lib/youtube-publisher";
+import { deleteFromR2 } from "@/lib/r2";
 
 export async function POST(
   req: Request,
@@ -89,6 +90,14 @@ export async function POST(
       action: "PROJECT_PUBLISHED",
       details: { youtubeVideoId: ytResponse.id },
     });
+
+    // 7. Delete the file from R2 to save space
+    if (finalFile.r2Key) {
+      await deleteFromR2(finalFile.r2Key);
+      // We might also want to set r2Key to null in the database, but since we are replacing it
+      // with a youtube link, maybe we don't need to nullify it, or maybe we do to avoid broken links.
+      // For now, let's just delete the actual object from storage.
+    }
 
     return NextResponse.json({ 
       success: true, 

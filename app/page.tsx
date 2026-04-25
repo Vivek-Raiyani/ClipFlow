@@ -78,6 +78,11 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="lp-footer">
         <div className="footer-text">Built for creators who travel.</div>
+        <div className="footer-nav">
+          <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+          <Link href="/terms" className="footer-link">Terms of Service</Link>
+          <Link href="/contact" className="footer-link">Contact</Link>
+        </div>
         <div className="footer-text" style={{ opacity: 0.5 }}>© 2026 ClipFlow Inc. All rights reserved.</div>
       </footer>
     </div>

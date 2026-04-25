@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId: clerkId } = await auth();
@@ -21,6 +21,8 @@ export async function PATCH(
 
     if (!user) return NextResponse.json({ error: "User not synced" }, { status: 404 });
 
+    const { id } = await params;
+
     const [updatedFile] = await db
       .update(projectFiles)
       .set({ 
@@ -28,7 +30,7 @@ export async function PATCH(
         approvedAt: status === "approved" ? new Date() : null,
         approvedBy: status === "approved" ? user.id : null
       })
-      .where(eq(projectFiles.id, params.id))
+      .where(eq(projectFiles.id, id))
       .returning();
 
     // Log the audit

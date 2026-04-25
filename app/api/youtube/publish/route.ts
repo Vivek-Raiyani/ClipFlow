@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { refreshAccessToken } from "@/lib/youtube";
 import { publishToYouTube } from "@/lib/youtube-publisher";
+import { deleteFromR2 } from "@/lib/r2";
 
 export async function POST(req: Request) {
   try {
@@ -99,6 +100,11 @@ export async function POST(req: Request) {
       action: "PROJECT_PUBLISHED",
       details: { youtubeVideoId: ytResponse.id },
     });
+
+    // 7. Delete the file from R2 to save space
+    if (file.r2Key) {
+      await deleteFromR2(file.r2Key);
+    }
 
     return NextResponse.json({ 
       success: true, 

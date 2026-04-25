@@ -40,8 +40,20 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${playfair.variable}`} data-theme="clipflow">
+      <html lang="en" className={`${inter.variable} ${playfair.variable}`} data-theme="clipflow" suppressHydrationWarning>
         <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  const theme = localStorage.getItem('theme');
+                  if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                  }
+                } catch (e) {}
+              `,
+            }}
+          />
           <link
             href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
             rel="stylesheet"

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { projectFiles, auditLogs } from "@/lib/db/schema";
+import { projectFiles, auditLogs, users } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq, desc } from "drizzle-orm";
 
@@ -9,7 +9,14 @@ export async function POST(req: Request) {
     const { userId: clerkId } = await auth();
     if (!clerkId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { projectId, uploaderId, r2Key, fileName, fileSize, type } = await req.json();
+    const { projectId, r2Key, fileName, fileSize, type } = await req.json();
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.clerkId, clerkId),
+    });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    const uploaderId = user.id;
 
     // Get current max version for this project/type
     const lastFile = await db.query.projectFiles.findFirst({
