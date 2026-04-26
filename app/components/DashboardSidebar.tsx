@@ -23,6 +23,8 @@ interface SidebarProps {
     published?: number;
     editors?: number;
   };
+  initialChannels?: any[];
+  activeChannelId?: string | null;
 }
 
 const navSections = [
@@ -49,7 +51,11 @@ const navSections = [
   },
 ];
 
-export function DashboardSidebar({ counts = {} }: SidebarProps) {
+export function DashboardSidebar({ 
+  counts = {}, 
+  initialChannels = [], 
+  activeChannelId = null 
+}: SidebarProps) {
   const pathname = usePathname();
   const { user } = useUser();
 
@@ -65,7 +71,7 @@ export function DashboardSidebar({ counts = {} }: SidebarProps) {
         </div>
       </Link>
 
-      <ChannelSwitcher />
+      <ChannelSwitcher initialChannels={initialChannels} initialActiveChannelId={activeChannelId} />
 
       {/* Nav sections */}
       {navSections.map((section) => (

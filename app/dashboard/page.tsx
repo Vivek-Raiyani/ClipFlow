@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { projects, projectFiles, creatorEditorRelationships, users } from "@/lib/db/schema";
-import { eq, count, and, isNull } from "drizzle-orm";
-import { syncUser } from "@/lib/user-sync";
+import { getDashboardData } from "@/lib/dashboard-data";
 import { DashboardLayout } from "@/app/components/DashboardLayout";
 import { ProjectCard } from "@/app/components/ProjectCard";
 import { CreateProjectButton } from "./CreateProjectButton";
@@ -12,30 +8,10 @@ import { CreateProjectButton } from "./CreateProjectButton";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect("/sign-in");
+  const data = await getDashboardData();
+  if (!data) redirect("/sign-in");
 
-  const user = await syncUser();
-  if (!user) redirect("/sign-in");
-
-  const [allProjects, pendingFiles, editors] = await Promise.all([
-    db.select().from(projects).where(
-      and(
-        eq(projects.creatorId, user.id),
-        user.activeChannelId 
-          ? eq(projects.channelId, user.activeChannelId) 
-          : isNull(projects.channelId)
-      )
-    ),
-    db.select({ count: count() }).from(projectFiles).where(eq(projectFiles.status, "pending")),
-    db.select({ count: count() }).from(creatorEditorRelationships).where(
-      eq(creatorEditorRelationships.creatorId, user.id)
-    ),
-  ]);
-
-  const publishedCount = allProjects.filter(p => p.status === "published").length;
-  const pendingCount = Number(pendingFiles[0]?.count ?? 0);
-  const editorCount = Number(editors[0]?.count ?? 0);
+  const { allProjects, pendingCount, publishedCount, editorCount } = data;
 
   return (
     <DashboardLayout>

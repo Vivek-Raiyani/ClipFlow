@@ -26,6 +26,7 @@ export default async function ProjectDetailPage({
   });
   if (!project || project.creatorId !== user.id) notFound();
 
+  const start = Date.now();
   const [files, editors, projectThumbnails] = await Promise.all([
     db
       .select({
@@ -62,6 +63,7 @@ export default async function ProjectDetailPage({
 
     db.select().from(thumbnails).where(eq(thumbnails.projectId, id)),
   ]);
+  console.log(`[ProjectPage] Fetch for ${id} took ${Date.now() - start}ms`);
 
   const isYouTubeConnected = Boolean(user.activeChannelId);
 

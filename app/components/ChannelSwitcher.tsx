@@ -11,15 +11,25 @@ interface Channel {
   channelThumbnail: string;
 }
 
-export function ChannelSwitcher() {
-  const [channels, setChannels] = useState<Channel[]>([]);
-  const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
+interface ChannelSwitcherProps {
+  initialChannels?: Channel[];
+  initialActiveChannelId?: string | null;
+}
+
+export function ChannelSwitcher({ 
+  initialChannels = [], 
+  initialActiveChannelId = null 
+}: ChannelSwitcherProps) {
+  const [channels, setChannels] = useState<Channel[]>(initialChannels);
+  const [activeChannelId, setActiveChannelId] = useState<string | null>(initialActiveChannelId);
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialChannels.length === 0);
 
   useEffect(() => {
-    fetchChannels();
-  }, []);
+    if (initialChannels.length === 0) {
+      fetchChannels();
+    }
+  }, [initialChannels]);
 
   const fetchChannels = async () => {
     try {

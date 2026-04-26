@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} ${playfair.variable}`} data-theme="clipflow" suppressHydrationWarning>
+      <html lang="en" className={`${inter.variable} ${playfair.variable}`} data-theme="clipflow" data-scroll-behavior="smooth" suppressHydrationWarning>
         <head>
           <script
             dangerouslySetInnerHTML={{
