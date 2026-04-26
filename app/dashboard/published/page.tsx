@@ -1,9 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { projects } from "@/lib/db/schema";
-import { eq, and, desc } from "drizzle-orm";
-import { syncUser } from "@/lib/user-sync";
+import { getDashboardData } from "@/lib/dashboard-data";
 import { DashboardLayout } from "@/app/components/DashboardLayout";
 import { ProjectCard } from "@/app/components/ProjectCard";
 import Link from "next/link";
@@ -15,20 +12,11 @@ export default async function PublishedPage() {
   const { userId: clerkId } = await auth();
   if (!clerkId) redirect("/sign-in");
 
-  const user = await syncUser();
-  if (!user) redirect("/sign-in");
+  const data = await getDashboardData();
+  if (!data) redirect("/sign-in");
 
-  const publishedProjects = await db
-    .select()
-    .from(projects)
-    .where(
-      and(
-        eq(projects.creatorId, user.id),
-        eq(projects.status, "published"),
-        user.activeChannelId ? eq(projects.channelId, user.activeChannelId) : undefined
-      )
-    )
-    .orderBy(desc(projects.updatedAt));
+  const { user, allProjects } = data;
+  const publishedProjects = allProjects.filter(p => p.status === "published");
 
   return (
     <DashboardLayout>

@@ -15,18 +15,23 @@ import { cache } from "react";
 export const syncUser = cache(async () => {
   const start = Date.now();
   try {
+    const authStart = Date.now();
     const { userId: clerkId } = await auth();
+    console.log(`[User-Sync] Clerk auth took ${Date.now() - authStart}ms`);
+
     if (!clerkId) {
       console.warn("[User-Sync] No active session found.");
       return null;
     }
 
     // 1. Check if user already exists in our local DB (FAST)
+    const dbStart = Date.now();
     const result = await db
       .select()
       .from(users)
       .where(eq(users.clerkId, clerkId))
       .limit(1);
+    console.log(`[User-Sync] DB select took ${Date.now() - dbStart}ms`);
 
     const existingUser = result[0];
     if (existingUser) {

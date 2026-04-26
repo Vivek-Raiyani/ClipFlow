@@ -21,13 +21,13 @@ export default async function ProjectDetailPage({
   const user = await syncUser();
   if (!user) redirect("/sign-in");
 
-  const project = await db.query.projects.findFirst({
-    where: eq(projects.id, id),
-  });
-  if (!project || project.creatorId !== user.id) notFound();
-
-  const start = Date.now();
-  const [files, editors, projectThumbnails] = await Promise.all([
+  const dbStart = Date.now();
+  
+  // Batch all project-specific data fetching into a single HTTP request
+  const [projectResult, files, editors, projectThumbnails] = await db.batch([
+    db.query.projects.findFirst({
+      where: eq(projects.id, id),
+    }),
     db
       .select({
         id: projectFiles.id,
@@ -63,7 +63,10 @@ export default async function ProjectDetailPage({
 
     db.select().from(thumbnails).where(eq(thumbnails.projectId, id)),
   ]);
-  console.log(`[ProjectPage] Fetch for ${id} took ${Date.now() - start}ms`);
+
+  if (!projectResult || projectResult.creatorId !== user.id) notFound();
+  console.log(`[ProjectPage] Batch fetch for ${id} took ${Date.now() - dbStart}ms`);
+  const project = projectResult;
 
   const isYouTubeConnected = Boolean(user.activeChannelId);
 

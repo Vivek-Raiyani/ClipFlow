@@ -403,7 +403,7 @@ export function ProjectDetailClient({
               >
                 <div className={`file-thumb-sm ${file.status}`}>
                   <div className="play-sm">
-                    <svg width="6" height="7" viewBox="0 0 10 12" fill="#0a0a0a"><polygon points="0,0 10,6 0,12"/></svg>
+                    <svg width="6" height="7" viewBox="0 0 10 12" fill="var(--ui-fg)"><polygon points="0,0 10,6 0,12"/></svg>
                   </div>
                 </div>
                 <div className="file-row-info">
@@ -566,7 +566,7 @@ export function ProjectDetailClient({
 
       {/* Invite Modal */}
       {showInviteModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(250,249,246,0.85)", backdropFilter: "blur(12px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "fixed", inset: 0, background: "color-mix(in srgb, var(--ui-bg) 85%, transparent)", backdropFilter: "blur(12px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <ModalShell title="Add Editor" maxWidth={400} onClose={() => setShowInviteModal(false)}>
             <div style={{ fontFamily: "var(--ui-mono)", fontSize: "9px", color: "var(--ui-fg3)", letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 700, marginBottom: "28px" }}>
               Send a secure invitation to join your network.
@@ -578,7 +578,7 @@ export function ProjectDetailClient({
                 value={inviteEmail}
                 onChange={e => setInviteEmail(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleInvite()}
-                icon={<Mail size={16} strokeWidth={1.5} color="rgba(0,0,0,0.12)" />}
+                icon={<Mail size={16} strokeWidth={1.5} color="var(--ui-fg3)" />}
               />
             </div>
             <Button variant="primary" style={{ width: "100%", justifyContent: "center", padding: "16px", borderRadius: "14px" }} onClick={handleInvite} disabled={inviting}>

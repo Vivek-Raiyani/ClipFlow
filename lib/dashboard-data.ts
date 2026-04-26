@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
 import { projects, projectFiles, creatorEditorRelationships, youtubeChannels, users } from "./db/schema";
-import { eq, and, count, isNull } from "drizzle-orm";
+import { eq, and, count, desc } from "drizzle-orm";
 import { cache } from "react";
 import { syncUser } from "./user-sync";
 
@@ -15,12 +15,16 @@ export const getDashboardData = cache(async () => {
 
   const start = Date.now();
   
-  // Use clerkId directly in joins to save a sequential database roundtrip
-  const [allProjects, pendingFiles, editors, userChannels] = await Promise.all([
+  const dbStart = Date.now();
+  
+  // Use db.batch to send ALL queries in a single HTTP request to Neon.
+  // This drastically reduces latency caused by multiple roundtrips.
+  const [allProjects, pendingFiles, editors, userChannels] = await db.batch([
     db.select({ projects, activeChannelId: users.activeChannelId })
       .from(projects)
       .innerJoin(users, eq(projects.creatorId, users.id))
-      .where(eq(users.clerkId, clerkId)),
+      .where(eq(users.clerkId, clerkId))
+      .orderBy(desc(projects.updatedAt)),
     
     db.select({ count: count() })
       .from(projectFiles)
@@ -42,6 +46,8 @@ export const getDashboardData = cache(async () => {
       .innerJoin(users, eq(youtubeChannels.userId, users.id))
       .where(eq(users.clerkId, clerkId)),
   ]);
+
+  console.log(`[DB-Fetch] Batch query took ${Date.now() - dbStart}ms`);
 
   const user = await userPromise;
   if (!user) return null;
